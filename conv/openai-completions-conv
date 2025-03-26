@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import os
+import traceback
+from openai import OpenAI
+from llm_actor.openai.completions import Conversation
+
+model = "gpt-4o-mini"
+# model = "o3-mini"
+# model = "gpt-4o"
+# model = "o1"
+
+ai = OpenAI()
+conv = Conversation(ai, model=model)
+try:
+    print(conv.ask("which runner holds the world record in 100m race?"))
+    print(conv.ask("what is his mother's name?"))
+except Exception as x:
+    print(x)
+    traceback.print_exc()
+    exit(1)
+
+print('---')
+print(conv.messages)

@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+# pip install langchain-community langchain-google-genai
+# https://python.langchain.com/docs/integrations/chat/google_generative_ai
+
+import os
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_x import Conversation
+from actor import Actor
+
+# model = "gemini-2.0-flash-lite"
+model = "gemini-2.0-flash"
+# model = "gemini-1.5-flash-8b"
+
+chat = ChatGoogleGenerativeAI(model=model, temperature=0)
+system_message_file = "apprentice-system.1"
+with open(system_message_file, "r") as file:
+    system_message = file.read()
+conv = Conversation(chat, system_message)
+act = Actor(conv)
+try:
+    print(act.ask("How long (in lines) is the program in x1.c?"))
+    print(act.ask("will the code compile? explain!"))
+except Exception as x:
+    print(x)
+
+print('---')
+print(conv.messages)

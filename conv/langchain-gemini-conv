@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+# pip install langchain-community langchain-google-genai
+
+import os
+from langchain_google_genai import GoogleGenerativeAI
+from llm_actor.langchain import Conversation
+
+model = "gemini-2.0-flash-lite-preview-02-05"
+# model = "gemini-2.0-flash-lite"
+# model = "gemini-2.0-flash"
+# model = "gemini-1.5-flash-8b"
+
+system_message = """
+You are a knowledgeable and articulate AI assistant.
+Keep your answer very concise. Do not provide extra information unless asked.
+"""
+
+chat = GoogleGenerativeAI(model=model, temperature=0)
+conv = Conversation(chat, prolog=system_message)
+try:
+    print(conv.ask("which runner holds the world record in 100m race?"))
+    print(conv.ask("what is his mother's name?"))
+except Exception as x:
+    print(x)
+
+print('---')
+print(conv.messages)

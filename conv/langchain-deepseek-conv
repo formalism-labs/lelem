@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+
+# pip install langchain-community langchain-deepseek
+# https://python.langchain.com/docs/integrations/chat/deepseek/
+
+import os
+from langchain_deepseek import ChatDeepSeek
+from llm_actor.langchain import Conversation
+
+model = "deepseek-chat" # DeepSeek-V3
+
+system_message = """
+You are a knowledgeable and articulate AI assistant.
+Keep your answer very concise. Do not provide extra information unless asked.
+"""
+
+chat = ChatDeepSeek(model_name=model, temperature=0)
+conv = Conversation(chat, prolog=system_message)
+try:
+    print(conv.ask("which runner holds the world record in 100m race?"))
+    print(conv.ask("what is his mother's name?"))
+except Exception as x:
+    print(x)
+
+print('---')
+print(conv.messages)

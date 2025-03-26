@@ -1,0 +1,9 @@
+rich
+openai
+anthropic
+google-genai
+google-generativeai
+langchain-community
+langchain-openai
+langchain-google-genai
+langchain-deepseek
