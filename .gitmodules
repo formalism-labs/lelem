@@ -1,0 +1,3 @@
+[submodule "classico"]
+	path = classico
+	url = https://github.com/formalism-labs/classico.git
