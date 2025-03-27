@@ -1,26 +1,28 @@
 
 import os
+import time
 import openai
-from ...conversation import ConversationBase
+from ...conversation import ConversationBase, DEFAULT_PROLOG
+
+default_model = "gpt-4o-mini"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model=None, prolog=None, temperature=0):
+    def __init__(self, ai, model=default_model, prolog=DEFAULT_PROLOG, temperature=0):
         super().__init__()
         self.ai = ai
         self.model = model
-        if prolog is None:
-            prolog = "You are a knowledgeable and articulate AI assistant."
-        self._messages = [self._question(prolog, role="system")]
-        self.system_message = prolog
+        self.prolog = str(prolog)
+        self._messages = [self._question(self.prolog, role="system")]
         self.temperature = temperature
 
     def _question(self, text, role="user"):
         return {"role": role, "content": text}
 
-    def _reply(self, text, role="assistant"):
+    def _answer(self, text, role="assistant"):
         return {"role": role, "content": text}
 
     def ask(self, q):
+        t0 = time.time()
         self._messages.append(self._question(q))
         try:
             resp = self.ai.chat.completions.create(
@@ -29,14 +31,20 @@ class Conversation(ConversationBase):
                 max_tokens=4096,
                 temperature=self.temperature)
         except Exception as x:
-            print(f"When asking: {q}\nAn error occurred: {x}")
-            raise x
-        output = resp.choices[0].message.content
-        input_tokens = 0 # resp.usage.input_tokens
-        output_tokens =  0 # resp.usage.output_tokens
-        total_tokens = 0 # input_tokens + output_tokens
-        self._messages.append(self._reply(output))
-        self.messages_cost.append({'input': input_tokens, 'total': input_tokens})
+            raise Exception(f"When asking: '{q}' an error occurred: {x}") from x
+
+        answer = resp.choices[0].message.content
+        self._messages.append(self._answer(answer))
+
+        input_tokens = resp.usage.prompt_tokens
+        cached_input_tokens = resp.usage.model_extra['prompt_cache_hit_tokens']
+        output_tokens = resp.usage.completion_tokens
+        total_tokens = resp.usage.total_tokens
+
+        self.messages_cost.append({'input': input_tokens, 'input_cached': cached_input_tokens, 'total': input_tokens})
         self.messages_cost.append({'output': output_tokens, 'total': output_tokens})
         self.total_tokens += total_tokens
-        return output
+        
+        cost = {'input': input_tokens, 'output': output_tokens, 'total': total_tokens}
+        self.add_qa(q, answer, time.time() - t0, cost)
+        return answer

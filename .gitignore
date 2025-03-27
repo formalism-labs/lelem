@@ -1,3 +1,6 @@
 __pycache__/
 *\.egg-info/
-./keys
+node_modules/
+/keys
+/package-lock.json
+/package.json

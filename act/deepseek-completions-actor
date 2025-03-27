@@ -1,26 +1,28 @@
 #!/usr/bin/env python
 
-import os
-import openai
-from deepseek_completions import Conversation
-from actor import Actor
+# pip install openai
 
-api_key = os.getenv("DEEPSEEK_API_KEY")
-ai = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
+from common import *
+import openai
+from llm_actor.deepseek import Conversation
+from llm_actor import Actor, Prolog
+
 
 model = "deepseek-chat" # DeepSeek-V3
 # model = "deepseek-reasoner" # DeepSeek-R1
 
-system_message_file = "apprentice-system.1"
-with open(system_message_file, "r") as file:
-    system_message = file.read()
-conv = Conversation(ai, model=model, prolog=system_message)
-act = Actor(conv)
-try:
-    print(act.ask("How long (in lines) is the program in x1.c?"))
-    print(act.ask("will the code compile?"))
-except Exception as x:
-    print(x)
+space = "../llm-actor-spaces/spaces/001"
 
-print('---')
-print(conv.messages)
+api_key = os.getenv("DEEPSEEK_API_KEY")
+ai = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
+prolog = Prolog("prologs/apprentice-system.1")
+conv = Conversation(ai, model=model, prolog=prolog)
+act = Actor(conv, space=space)
+
+def ask(q):
+    print(q)
+    print(act.ask(q))
+
+ask("How long (in lines) is the program in x1.c?")
+ask("will the code compile? explain!")
+act.print_summary()

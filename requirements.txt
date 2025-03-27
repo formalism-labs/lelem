@@ -7,3 +7,4 @@ langchain-community
 langchain-openai
 langchain-google-genai
 langchain-deepseek
+langchain-ollama

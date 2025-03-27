@@ -9,18 +9,13 @@ from llm_actor.langchain import Conversation
 
 model = "deepseek-chat" # DeepSeek-V3
 
-system_message = """
-You are a knowledgeable and articulate AI assistant.
-Keep your answer very concise. Do not provide extra information unless asked.
-"""
-
 chat = ChatDeepSeek(model_name=model, temperature=0)
-conv = Conversation(chat, prolog=system_message)
-try:
-    print(conv.ask("which runner holds the world record in 100m race?"))
-    print(conv.ask("what is his mother's name?"))
-except Exception as x:
-    print(x)
+conv = Conversation(chat)
 
-print('---')
-print(conv.messages)
+def ask(q):
+    print(q)
+    print(conv.ask(q))
+
+ask("which runner holds the world record in 100m race?")
+ask("what is his mother's name?")
+conv.print_summary()

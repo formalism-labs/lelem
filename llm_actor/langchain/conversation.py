@@ -4,15 +4,21 @@ from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from ..conversation import ConversationBase, DEFAULT_PROLOG
 
 class Conversation(ConversationBase):
-    def __init__(self, chat, prolog=DEFAULT_PROLOG):
+    def __init__(self, chat, model=None, prolog=DEFAULT_PROLOG):
         super().__init__()
         self.chat = chat
-        self.model = chat.model_name
-        #if prolog is None:
-        #    prolog = "You are a knowledgeable and articulate AI assistant."
-        self._messages = [SystemMessage(content=prolog)]
+        if model is None:
+            try:
+                self.model = chat.model_name
+            except:
+                raise Exception("cannot determine model name")
+        else:
+            self.model = model
+        self.prolog = str(prolog)
+        self._messages = [SystemMessage(content=self.prolog)]
     
     def ask(self, q):
+        t0 = time.time()
         self._messages.append(HumanMessage(content=q))
         try:
             resp = self.chat.invoke(self._messages)
@@ -21,12 +27,12 @@ class Conversation(ConversationBase):
             raise x
         input_tokens = output_tokens = total_tokens = 0
         if isinstance(resp, str):
-            output = resp
+            answer = resp
             input_tokens = self.chat.get_num_tokens(q)
             output_tokens = self.chat.get_num_tokens(resp)
             total_tokens = input_tokens + output_tokens
         elif hasattr(resp, 'content'):
-            output = resp.content
+            answer = resp.content
             try:
                 token_usage = resp.usage_metadata
                 if token_usage:
@@ -37,12 +43,14 @@ class Conversation(ConversationBase):
                 pass
         else:
             raise Exception('cannot determine LLM output')
-        self._messages.append(AIMessage(content=output))
+        self._messages.append(AIMessage(content=answer))
         
         self.messages_cost.append({'input': input_tokens, 'total': input_tokens})
         self.messages_cost.append({'output': output_tokens, 'total': output_tokens})
         self.total_tokens += total_tokens
-        return output
+
+        self.add_qa(q, answer, time.time() - t0, {'input': input_tokens, 'output': output_tokens, 'total': total_tokens})
+        return answer
 
     @property
     def messages(self):

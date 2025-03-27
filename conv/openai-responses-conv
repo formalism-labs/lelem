@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+# pip install openai
+
+from common import *
 from openai import OpenAI
-import os
 from llm_actor.openai.responses import Conversation
 
 model = "gpt-4o-mini"
@@ -9,18 +11,13 @@ model = "gpt-4o-mini"
 # model = "gpt-4o"
 # model = "o1"
 
-system_message = """
-You are a knowledgeable and articulate AI assistant.
-Keep your answer very consice. Do not provide extra information unless asked.
-"""
-
 ai = OpenAI()
-conv = Conversation(ai, model, system_message)
-try:
-    print(conv.ask("which runner holds the world record in 100m race?"))
-    print(conv.ask("what is his mother's name?"))
-except Exception as x:
-    print(x)
+conv = Conversation(ai, model=model)
 
-print('---')
-print(conv.messages)
+def ask(q):
+    print(q)
+    print(conv.ask(q))
+
+ask("which runner holds the world record in 100m race?")
+ask("what is his mother's name?")
+conv.print_summary()

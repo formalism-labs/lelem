@@ -2,13 +2,10 @@
 
 # pip install google-genai
 
-import os
+from common import *
 from google import genai
-from gemini import Conversation
-from actor import Actor
-
-api_key = os.getenv("GOOGLE_API_KEY")
-ai = genai.Client(api_key=api_key)
+from llm_actor.gemini import Conversation
+from llm_actor import Actor, Prolog
 
 # model = "gemini-2.0-flash-lite-preview-02-05" # fails to detect C error
 # model = "gemini-2.0-flash" # fails to understand instuctions
@@ -17,16 +14,18 @@ model = "gemini-2.0-flash-thinking-exp-01-21" # very good. only explains when as
 # model = "gemini-1.5-flash-8b" # fails to understand instructions
 # model = "gemma-3-27b-it" # no instructions yet
 
-system_message_file = "apprentice-system.1"
-with open(system_message_file, "r") as file:
-    system_message = file.read()
-conv = Conversation(ai, model=model, prolog=system_message)
-act = Actor(conv)
-try:
-    print(act.ask("How long (in lines) is the program in x1.c?"))
-    print(act.ask("will the code compile?"))
-except Exception as x:
-    print(x)
+space = "../llm-actor-spaces/spaces/001"
 
-print('---')
-print(conv.messages)
+api_key = os.getenv("GOOGLE_API_KEY")
+ai = genai.Client(api_key=api_key)
+prolog = Prolog("prologs/apprentice-system.1")
+conv = Conversation(ai, model=model, prolog=prolog)
+act = Actor(conv, space=space)
+
+def ask(q):
+    print(q)
+    print(act.ask(q))
+
+ask("How long (in lines) is the program in x1.c?")
+ask("will the code compile? explain!")
+act.print_summary()

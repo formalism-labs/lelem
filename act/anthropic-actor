@@ -2,32 +2,27 @@
 
 # pip install anthropic
 
-import os
-import traceback
+from common import *
 import anthropic
 from llm_actor.anthropic import Conversation
 from llm_actor import Actor, Prolog
-
-api_key = os.getenv("ANTHROPIC_API_KEY")
-ai = anthropic.Anthropic(api_key=api_key)
 
 # model = "claude-3-haiku-20240307" # does not get the apprentice instructions right
 model = "claude-3-5-haiku-20241022"
 # model = "claude-3-7-sonnet-20250219"
 
-space = "spaces/001"
+space = "../llm-actor-spaces/spaces/001"
 
+api_key = os.getenv("ANTHROPIC_API_KEY")
+ai = anthropic.Anthropic(api_key=api_key)
 prolog = Prolog("prologs/apprentice-system.1")
-conv = Conversation(ai, model=model, prolog=str(prolog))
+conv = Conversation(ai, model=model, prolog=prolog)
 act = Actor(conv, space=space)
-try:
-    print(act.ask("How long (in lines) is the program in x1.c?"))
-    print(act.ask("will the code compile?"))
-except Exception as x:
-    print(x)
-    traceback.print_exc()
-    exit(1)
-    
 
-print('---')
-print(conv.messages)
+def ask(q):
+    print(q)
+    print(act.ask(q))
+
+ask("How long (in lines) is the program in x1.c?")
+ask("will the code compile? explain!")
+act.print_summary()

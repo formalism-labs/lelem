@@ -1,5 +1,9 @@
 
 import time
+from rich import print_json
+import yaml
+from rich.syntax import Syntax
+from rich.console import Console
 
 DEFAULT_PROLOG = """
 You are a knowledgeable and articulate AI assistant.
@@ -57,3 +61,18 @@ class ConversationBase:
         
     def questions(self):
         return list(map(lambda m: m['question'], self._conv))
+
+    def print_summary(self):
+        print('---')
+        print(self.messages)
+        print('---')
+        print_json(data=self.conversation())
+        print('---')
+                
+        class MultiLineDumper(yaml.Dumper):
+            def represent_scalar(self, tag, value, style=None):
+                if "\n" in value:
+                    style = "|"
+                return super().represent_scalar(tag, value, style)
+
+        print(yaml.dump(self.conversation(), sort_keys=False, default_flow_style=False, Dumper=MultiLineDumper))

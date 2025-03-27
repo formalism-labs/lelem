@@ -15,4 +15,5 @@ dependencies = [
     "langchain-openai",
     "langchain-google-genai",
     "langchain-deepseek",
+    "langchain-ollama"
 ]

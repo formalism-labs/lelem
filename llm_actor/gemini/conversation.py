@@ -14,14 +14,14 @@ class Conversation(ConversationBase):
         super().__init__()
         self.ai = ai
         self.model = model
-        self.prolog = prolog
+        self.prolog = str(prolog)
         self.temperature = temperature
 
         self.config = types.GenerateContentConfig(
             # system_instruction=self.system_message,
             max_output_tokens=4096,
             temperature=temperature)
-        self.gen_model = genai.GenerativeModel(model, system_instruction=prolog)
+        self.gen_model = genai.GenerativeModel(model, system_instruction=self.prolog)
         self.chat = self.gen_model.start_chat()
 
     def _question(self, text, role="user"):

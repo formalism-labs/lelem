@@ -6,29 +6,20 @@ from common import *
 from google import genai
 from llm_actor.gemini import Conversation
 
-api_key = os.getenv("GOOGLE_API_KEY")
-ai = genai.Client(api_key=api_key)
-
 model = "gemini-2.0-flash-lite-preview-02-05"
 # model = "gemini-2.0-flash"
 # model = "gemini-2.0-pro-exp-02-05"
 # model = "gemini-2.0-flash-thinking-exp-01-21"
 # model = "gemini-1.5-flash-8b"
 
-system_message="""
-You are a knowledgeable and articulate AI assistant.
-Keep your answer very consice. Do not provide extra information unless asked.
-"""
+api_key = os.getenv("GOOGLE_API_KEY")
+ai = genai.Client(api_key=api_key)
+conv = Conversation(ai, model=model)
 
-conv = Conversation(ai, model=model, prolog=system_message)
-try:
-	print(conv.ask("which runner holds the world record in 100m race?"))
-	print(conv.ask("what is his mother's name?"))
-except Exception as x:
-    sys.excepthook(type(x), x, x.__traceback__)
-    exit(1)
+def ask(q):
+    print(q)
+    print(conv.ask(q))
 
-print('---')
-print(conv.messages)
-print('---')
-print_json(data=conv.conversation())
+ask("which runner holds the world record in 100m race?")
+ask("what is his mother's name?")
+conv.print_summary()

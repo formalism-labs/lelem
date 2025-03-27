@@ -1,24 +1,28 @@
 #!/usr/bin/env python
 
+# pip install openai
+
+from common import *
 from openai import OpenAI
-from openai_responses import Conversation
-from actor import Actor
+from llm_actor.openai.responses import Conversation
+from llm_actor import Actor, Prolog
 
 model = "gpt-4o"
 # model = "gpt-4o-mini"  # has comprehention problems
 # model = "o3-mini" # has comprehention problems
 # model = "o1"
 
-system_message_file = "apprentice-system.1"
-with open(system_message_file, "r") as file:
-    system_message = file.read()
+space = "../llm-actor-spaces/spaces/001"
 
 ai = OpenAI()
-conv = Conversation(ai, model, system_message)
-act = Actor(conv)
-try:
-    print(act.ask("How long (in lines) is the program in x1.c?"))
-except Exception as x:
-    print(x)
-print('---')
-print(conv.messages)
+prolog = Prolog("prologs/apprentice-system.1")
+conv = Conversation(ai, model=model, prolog=prolog)
+act = Actor(conv, space=space)
+
+def ask(q):
+    print(q)
+    print(act.ask(q))
+
+ask("How long (in lines) is the program in x1.c?")
+ask("will the code compile? explain!")
+act.print_summary()

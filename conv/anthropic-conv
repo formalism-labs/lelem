@@ -2,28 +2,22 @@
 
 # pip install anthropic
 
-import os
+from common import *
 import anthropic
 from llm_actor.anthropic import Conversation
-
-api_key = os.getenv("ANTHROPIC_API_KEY")
-ai = anthropic.Anthropic(api_key=api_key)
 
 # model = "claude-3-haiku-20240307" # doesn't know Jennifer Bolt
 model = "claude-3-5-haiku-20241022"
 # model = "claude-3-7-sonnet-20250219"
 
-system_message="""
-You are a knowledgeable and articulate AI assistant.
-Keep your answer very consice. Do not provide extra information unless asked.
-"""
+api_key = os.getenv("ANTHROPIC_API_KEY")
+ai = anthropic.Anthropic(api_key=api_key)
+conv = Conversation(ai, model=model)
 
-conv = Conversation(ai, model, system_message)
-try:
-	print(conv.ask("which runner holds the world record in 100m race?"))
-	print(conv.ask("what is his mother's name?"))
-except Exception as x:
-    print(x)
+def ask(q):
+    print(q)
+    print(conv.ask(q))
 
-print('---')
-print(conv.messages)
+ask("which runner holds the world record in 100m race?")
+ask("what is his mother's name?")
+conv.print_summary()
