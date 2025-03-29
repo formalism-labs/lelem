@@ -7,6 +7,7 @@ from google import genai
 from llm_actor.gemini import Conversation
 from llm_actor import Actor, Prolog
 
+# model = "gemini-2.5-pro-exp-03-25"
 # model = "gemini-2.0-flash-lite-preview-02-05" # fails to detect C error
 # model = "gemini-2.0-flash" # fails to understand instuctions
 model = "gemini-2.0-flash-thinking-exp-01-21" # very good. only explains when asked.
