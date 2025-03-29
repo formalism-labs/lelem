@@ -3,7 +3,7 @@ import os
 import sys
 
 class Prolog:
-    def __init__(self, fpath):
+    def __init__(self, fpath = "prologs/apprentice-system.1"):
         self.text = ""
         fdir = os.path.dirname(fpath)
         with open(fpath, "r") as file:
