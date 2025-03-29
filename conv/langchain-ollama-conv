@@ -6,11 +6,23 @@ from common import *
 from langchain_ollama import ChatOllama
 from llm_actor.langchain import Conversation
 
-# model = "mistral:7b"
-# model = "gemma3:4b"
-# model = "llama3.1:8b"
-# model = "deepseek-r1:8b"
-model = "qwq:32b"
+MODEL = os.getenv("MODEL", "")
+
+models = {
+    'phi4:14b': { 'by': 'microsoft' },
+    'mistral:7b': { 'by': 'mistral' },
+    'gemma3:4b': { 'by': 'google' },
+    'llama3.1:8b': { 'by': 'facebook' },
+    'deepseek-r1:8b': { 'by': 'deepseek' },
+    'qwq:32b': { 'by': 'qwen' }
+    }
+model = next((m for m in models if MODEL in m), None)
+if model is None:
+    model = models[0]
+
+if os.getenv("NOP", "0") == "1":
+    print(f"model={model}")
+    exit(0)
 
 chat = ChatOllama(model=model, temperature=0, n_gpu_layers=-1)
 conv = Conversation(chat, model=model)

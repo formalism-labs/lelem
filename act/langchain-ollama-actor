@@ -12,7 +12,8 @@ from llm_actor import Actor, Prolog
 # model = "gemma3:4b"
 # model = "llama3.1:8b"
 # model = "deepseek-r1:8b"
-model = "qwq:32b"
+model = "phi4:14b" # pretty good on mac
+# model = "qwq:32b" # too slow on mac
 
 space = "../llm-actor-spaces/spaces/001"
 
