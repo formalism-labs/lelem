@@ -36,3 +36,6 @@ uninstall:
 
 clean:
 	@rm -rf llm_actor.egg-info
+
+mypy:
+	@mypy llm_actor conv/*-conv conv/prolog act/*-actor
