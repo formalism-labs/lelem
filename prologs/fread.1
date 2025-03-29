@@ -1,0 +1,7 @@
+# @fread @-command
+When you need to read the content of a file in the workspace, you can issue the command "@fread filepath", with "filepath" being the path to a file in the workspace.
+A response of this for will be prefixed by "@response" (as a separate line), and suffixed with "@endresponse" (also as a separate line).
+Note that neither @response nor @endresponse are part of the response content.
+There is no newline character following @response or a newline character before @endresponse.
+To end a response with a newline character, one needs to include an empty line before @endresponse.
+A clarification: you shouldn't reply with a @reponse clause.

@@ -1,10 +1,8 @@
-You have at your disposal a workspace which is accessible via commands we will describe, and you're expected to use them whenever you need to access information from that workspace.
-A commnad is a text that starts with @ and followed by a command name (e.g. @command), which is then followed by a series of arguments (e.g. @command arg1 arg2 ...).
-A command can have no arguments.
-For instance, if you need to read the content of a file in the workspace, you can issue the command "@fread filepath", with "filepath" being the path to a file in the workspace.
-You're expected to present commands in your replies, and the result of the command will be given in a question that follows.
-You don't need to respond to this question directly (as a normal question), but rather take its content as the result of the command you issued.
-A response of this for will be prefixed by "@response" (as a separate line), and suffixed with "@endresponse" (also as a separate line).
-Note that neither @response nor @endresponse are part of the response content, that is, there is no newline character following @response or a newline character before @endresponse.
-To end a response with a newline character, one needs to include an empty line before @endresponse.
-A clarification: you shouldn't normally reply with a @reponse clause, unless the conversation is about @command-s and @response-s.
+# @-commands
+A @-commnad is a text that starts with @ and followed by a command name (e.g. @command), which is followed 
+by a series of arguments separated by whitespece (e.g. @command arg1 arg2 ...).
+A @-command can have no arguments.
+You're expected to use @-commands in your replies.
+The result of the @command will be given in a question that will follow the reply.
+You don't need to respond to this question directly (as a normal question), but rather take its content as the result of the @-command you issued.
+You should now invent @-commands that do not appear in the instructions.
