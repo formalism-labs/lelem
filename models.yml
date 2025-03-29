@@ -1,0 +1,74 @@
+---
+gpt-4o-mini:
+  by: openai
+  default: true
+o3-mini:
+  by: openai
+gpt-4o:
+  by: openai
+o1:
+  by: openai
+
+gemini-2.5-pro:
+  name: gemini-2.5-pro-exp-03-25
+  by: google
+claude-3-haiku:
+  name: claude-3-haiku-20240307"
+  by: anthropic
+claude-3-5-haiku:
+  name: claude-3-5-haiku-20241022
+  by: anthropic
+  default: true
+claude-3-7-sonnet:
+  name: claude-3-7-sonnet-20250219
+  by: anthropic
+
+gemini-2.0-flash-lite:
+  name: gemini-2.0-flash-lite-preview-02-05
+  by: google
+  default: true
+gemini-2.0-flash:
+  name: gemini-2.0-flash
+  by: google
+gemini-2.0-pro:
+  name: gemini-2.0-pro-exp-02-05
+  by: google
+gemini-2.0-flash-thinking:
+  name: gemini-2.0-flash-thinking-exp-01-21
+  by: google
+gemini-1.5-flash-8b:
+  name: gemini-1.5-flash-8b
+  by: google
+
+deepseek-v3:
+  name: deepseek-chat
+  by: deepseek
+  default: true
+deepseek-r1:
+  name: deepseek-reasoner
+  by: deepseek
+
+'phi4:14b':
+  by: microsoft
+  params: 14
+  ollama: true
+'mistral:7b':
+  by: mistral
+  params: 7
+  ollama: true
+'gemma3:4b':
+  by: google
+  params: 4
+  ollama: true
+'llama3.1:8b':
+  by: facebook
+  params: 8
+  ollama: true
+'deepseek-r1:8b':
+  by: deepseek
+  params: 8
+  ollama: true
+'qwq:32b':
+  by': qwen'
+  params: 32
+  ollama: true
