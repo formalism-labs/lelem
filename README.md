@@ -2,7 +2,7 @@
 
 A Python library that allows for LLM-initiated conversations over a. In a way, it resembles MCP behavior without the MCP overhead.
 
-The "Agent" terminology is deliberately avoided to emphasize the focus on simple request/response interactions without the more complex behaviors a traditional agent (not in the model context) should exhibit.
+The "agent" terminology is deliberately avoided to emphasize the focus on simple request/response interactions without the more complex behaviors a traditional agent (not in the model context) should exhibit.
 
 One specific behavior `llm-actor` should help to achieve is the possibility to conduct an interaction regarding a source code project that is managed in `git`, and has testing functionality (either an existing one or one that's created as part of the interaction with the model). The wish is to let the model modify code directly, commit changes to git (possibly on context branches), and autonomously run tests in order to validate its operations (and possibly roll back when needed).
 
@@ -28,9 +28,11 @@ On macOS, lacking native container support, `tart` can be used to configure nati
 
 Automation is taken care of by the `Classico` library.
 
-## Prologs (instructions)
+## Model instructions (aka "prologs")
 
+There is a mechanism that allow for tinkering with prologs. It is based on a root file (e.g. `prolog/apprentice-system.1`) that may contain include directives (lines that start with `@`) and comments (lines that start with `#`). Files that are included are taken verbatim (in order not to over complicate things). The `.number` postfix of prolog files is a convention that supports switching between alternative prompt.
 
+Use `act/prolog` to display the 
 
 ## Supported commands
 
