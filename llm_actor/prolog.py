@@ -1,6 +1,5 @@
 
-import os
-import sys
+from .common import * # noqa: F403, F401
 
 class Prolog:
     def __init__(self, fpath = "prologs/apprentice-system.1"):

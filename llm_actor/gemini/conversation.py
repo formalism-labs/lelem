@@ -10,10 +10,12 @@ from ..conversation import ConversationBase, DEFAULT_PROLOG
 default_model = "gemini-2.0-flash-lite-preview-02-05"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model=default_model, prolog=DEFAULT_PROLOG, temperature=0):
+    def __init__(self, ai, model=default_model, prolog=None, temperature=0):
         super().__init__()
         self.ai = ai
         self.model = model
+        if prolog is None:
+            prolog = DEFAULT_PROLOG
         self.prolog = str(prolog)
         self.temperature = temperature
 

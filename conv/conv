@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+from common import *
+from llm_actor import Model, Models, Questions, Prolog, Actor, create_conv
+
+from colorama import Fore, Style
+
+BRI = Style.BRIGHT
+BW = NOC = Style.RESET_ALL
+RED = Fore.RED
+BRED = BRI + RED
+GREEN = Fore.GREEN
+BGREEN = BRI + GREEN
+BLUE = Fore.BLUE
+BBLUE = BRI + BLUE
+
+DEFAULT_MODEL = "gemini-2.0-flash-lite"
+
+is_act = os.getenv("ACT", "0") == "1"
+
+prolog = None
+if is_act:
+    fprolog = os.getenv("PROLOG", "prologs/apprentice-system.1")
+    if fprolog != "":
+        prolog = Prolog(fprolog)
+
+conv = create_conv(prolog=prolog, default_model_name=DEFAULT_MODEL)
+
+if is_act:
+    space = "../llm-actor-spaces/spaces/001"
+    act = Actor(conv, space=space)
+    x_conv = act
+else:
+    x_conv = conv
+
+def ask(q):
+    print(f"\n{RED}Q: {BW}{BBLUE}{q}{NOC}")
+    a = x_conv.ask(q).strip()
+    if "\n" in a:
+        print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
+    else:
+        print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+
+qfile = os.getenv("Q", "004-bolt")
+try:
+    qq = Questions(qfile)
+    for q in qq:
+        ask(q)
+    if os.getenv("SUM") == "1":
+        conv.print_summary()
+except Exception as x:
+    print(f"Error: {x}")
+    conv.print_summary()

@@ -1,4 +1,5 @@
 
+from .conversation import create_conv
 from .actor import Actor
 from .prolog import Prolog
 from .models import Models, Model

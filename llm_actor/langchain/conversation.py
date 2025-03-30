@@ -4,7 +4,7 @@ from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from ..conversation import ConversationBase, DEFAULT_PROLOG
 
 class Conversation(ConversationBase):
-    def __init__(self, chat, model=None, prolog=DEFAULT_PROLOG):
+    def __init__(self, chat, model=None, prolog=None):
         super().__init__()
         self.chat = chat
         if model is None:
@@ -14,6 +14,8 @@ class Conversation(ConversationBase):
                 raise Exception("cannot determine model name")
         else:
             self.model = model
+        if prolog is None:
+            prolog = DEFAULT_PROLOG
         self.prolog = str(prolog)
         self._messages = [SystemMessage(content=self.prolog)]
     

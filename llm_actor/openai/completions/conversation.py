@@ -7,10 +7,12 @@ from ...conversation import ConversationBase, DEFAULT_PROLOG
 default_model = "gpt-4o-mini"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model=default_model, prolog=DEFAULT_PROLOG, temperature=0):
+    def __init__(self, ai, model=default_model, prolog=None, temperature=0):
         super().__init__()
         self.ai = ai
         self.model = model
+        if prolog is None:
+            prolog = DEFAULT_PROLOG
         self.prolog = str(prolog)
         self._messages = [self._question(self.prolog, role="system")]
         self.temperature = temperature

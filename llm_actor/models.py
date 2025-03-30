@@ -1,8 +1,5 @@
 
 from .common import * # noqa: F403, F401
-import re
-import yaml
-from typing import TypedDict, List, Optional
 
 HERE = os.path.dirname(__file__)
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
@@ -14,7 +11,7 @@ class ModelProperties(TypedDict):
 
 class Model:
     def __init__(self, name: str, properties: ModelProperties):
-        self.__dict__ = properties
+        self.__dict__ = cast(Dict[str, Any], properties)
         self.name = name
         self.full_name = properties.get("name", name)
         self.default = properties.get("default", False)
@@ -38,7 +35,7 @@ class Models:
             return model
         return self._models.get(name)
 
-    def match(self, name: str) -> List[Model]:
+    def match(self, name: str) -> Model | List[Model]:
         models = [Model(model, props) for model, props in self._yaml.items() if re.search(name, model)]
         if len(models) == 1:
             return models[0]
