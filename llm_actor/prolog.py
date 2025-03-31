@@ -7,13 +7,16 @@ class Prolog:
         fdir = os.path.dirname(fpath)
         with open(fpath, "r") as file:
             for line in file:
+                if line[0] == '#':
+                    continue
                 if line[0] == '@':
                     fpath1 = os.path.join(fdir, line.strip()[1:])
-                    with open(fpath1, "r") as file:
-                        text1 = file.read()
-                        self.text += text1 + "\n"
-                elif line[0] == '#':
-                    continue
+                    with open(fpath1, "r") as file1:
+                        for line1 in file1:
+                            if line1[0] == '#':
+                                continue
+                            self.text += line1
+                        self.text += "\n"
                 else:
                     self.text += line
 

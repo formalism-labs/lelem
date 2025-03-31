@@ -1,19 +1,19 @@
 
-import contextlib
-from rich import print_json
-import yaml
-from rich.syntax import Syntax
-from rich.console import Console
+from .common import *
+from .conversation import ConversationBase
+from .questions import Question
 
 class Actor():
     def __init__(self, conv, space=None):
-        self.conv = conv
+        self.conv: ConversationBase = conv
         if space is None:
             raise Exception("no space is given for actor")
         self.space = space
 
-    def ask(self, q):
-        answer = self.conv.ask(q)
+    def ask(self, q: Question):
+        answer = self.conv.ask(q.text)
+        if q.noc:
+            return answer
         for line in answer.splitlines():
             words = line.split()
             if len(words) == 0:

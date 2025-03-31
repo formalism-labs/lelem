@@ -86,8 +86,16 @@ def create_conv(default_model_name: str = None, prolog: Prolog = None, temperatu
         print(f"Error: no model matches {model_name}")
         exit(1)
     elif isinstance(model, list):
-        print(f"Error: more than one model match: {[model.name for model in model]}")
-        exit(1)
+        matched_models = model
+        perfect_match = None
+        for m in matched_models:
+            if m.name == model_name:
+                perfect_match = m
+                break
+        if perfect_match is None:
+            print(f"Error: more than one model match: {[model.name for model in model]}")
+            exit(1)
+        model = perfect_match
 
     use_langchain = os.getenv("LC", False)
     if use_langchain:

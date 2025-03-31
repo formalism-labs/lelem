@@ -38,4 +38,6 @@ clean:
 	@rm -rf llm_actor.egg-info
 
 mypy:
-	@mypy llm_actor conv/*-conv conv/prolog act/*-actor
+	@mypy llm_actor/
+	@mypy conv/conv
+	@mypy act/prolog

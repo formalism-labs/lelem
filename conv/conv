@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from common import *
-from llm_actor import Model, Models, Questions, Prolog, Actor, create_conv
+from llm_actor import Model, Models, Question, Questions, Prolog, Actor, create_conv
 
 from colorama import Fore, Style
 
@@ -33,8 +33,9 @@ if is_act:
 else:
     x_conv = conv
 
-def ask(q):
-    print(f"\n{RED}Q: {BW}{BBLUE}{q}{NOC}")
+def ask(q: Question):
+    q.pprint()
+    #print(f"\n{RED}Q: {BW}{BBLUE}{q}{NOC}")
     a = x_conv.ask(q).strip()
     if "\n" in a:
         print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")

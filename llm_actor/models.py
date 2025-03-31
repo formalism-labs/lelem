@@ -13,7 +13,7 @@ class Model:
     def __init__(self, name: str, properties: ModelProperties):
         self.__dict__ = cast(Dict[str, Any], properties)
         self.name = name
-        self.full_name = properties.get("name", name)
+        self.full_name = str(properties.get("name", name))
         self.default = properties.get("default", False)
 
     def __repr__(self):

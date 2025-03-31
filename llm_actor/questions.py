@@ -5,36 +5,61 @@ HERE = os.path.dirname(__file__)
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 SESSIONS = os.path.abspath(os.path.join(ROOT, "sessions"))
 
+class Question:
+    def __init__(self, text: str = ""):
+        self.text = text.strip()
+        self.noc = False # no commands flag
+
+    def append_line(self, line):
+        self.text += ("\n" if self.text != "" else "") + line
+
+    def is_multiline(self):
+        return "\n" in self.text
+
+    def pprint(self):
+        print(f"\n{RED}Q: {BW}{BBLUE}{self.text}{BW}")
+
+    def __str__ (self):
+        return self.text
+
 class Questions:
     def __init__(self, qfile):
-        self._questions = []
-        in_q = False
+        self._questions : List[Question] = []
         qfile0 = qfile
         if not os.path.exists(qfile):
             qfile = f"{SESSIONS}/{qfile}"
             if not os.path.exists(qfile):
                 raise Exception(f"{qfile0} cannot be found")
         with open(qfile, "r") as  file:
-            q = ""
+            q = None
             for line in file:
                 if line[0] == '#':
                     continue
                 line = line.strip()
                 if line == "":
                     continue
-                if not in_q:
+                if q is None:
                     if line[0:2] == 'Q:':
-                        in_q = True
-                        q = line[2:].strip()
+                        t = line[2:].strip()
+                        q = Question()
+                        if t == "@noc":
+                            q.noc = True
+                        else:
+                            q.append_line(t)
                     else:
+                        # comments or directives here
                         continue
-                else:
-                    if line[0:2] == 'Q:':
-                        self._questions.append(q)
-                        q = line[2:].strip()
+                elif line[0:2] == 'Q:':
+                    self._questions.append(q)
+                    t = line[2:].strip()
+                    q = Question()
+                    if t == "@noc":
+                        q.noc = True
                     else:
-                        q += "\n" + line
-            if in_q and q != "":
+                        q.append_line(t)
+                else:
+                    q.append_line(line)
+            if q is not None:
                 self._questions.append(q)
 
     def __iter__(self):
