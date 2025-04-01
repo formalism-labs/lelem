@@ -1,19 +1,22 @@
 
-import os
-import time
-import openai
+from ...common import *
 from ...conversation import ConversationBase, DEFAULT_PROLOG
+from ...questions import Question
+from ...prolog import Prolog
 
-default_model = "gpt-4o-mini"
+import openai
+
+DEFAULT_MODEL = "gpt-4o-mini"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model=default_model, prolog=None, temperature=0):
+    def __init__(self, ai, model: str = DEFAULT_MODEL, prolog: Optional[Prolog] = None, temperature: float = 0):
         super().__init__()
         self.ai = ai
         self.model = model
         if prolog is None:
-            prolog = DEFAULT_PROLOG
-        self.prolog = str(prolog)
+            self.prolog = DEFAULT_PROLOG
+        else:
+            self.prolog = str(prolog)
         self._messages = [self._question(self.prolog, role="system")]
         self.temperature = temperature
 
@@ -23,9 +26,9 @@ class Conversation(ConversationBase):
     def _answer(self, text, role="assistant"):
         return {"role": role, "content": text}
 
-    def ask(self, q):
+    def ask(self, q: Question):
         t0 = time.time()
-        self._messages.append(self._question(q))
+        self._messages.append(self._question(q.text))
         try:
             resp = self.ai.chat.completions.create(
                 model=self.model,
@@ -33,7 +36,7 @@ class Conversation(ConversationBase):
                 max_tokens=4096,
                 temperature=self.temperature)
         except Exception as x:
-            raise Exception(f"When asking: '{q}' an error occurred: {x}") from x
+            raise Exception(f"When asking: '{q.text}' an error occurred: {x}") from x
 
         answer = resp.choices[0].message.content
         self._messages.append(self._answer(answer))

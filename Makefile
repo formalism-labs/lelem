@@ -32,12 +32,10 @@ install:
 	@uv pip install -e .
 
 uninstall:
-	@uv pip uninstall llm-actor
+	@uv pip uninstall lelem
 
 clean:
-	@rm -rf llm_actor.egg-info
+	@rm -rf lelem.egg-info
 
 mypy:
-	@mypy llm_actor/
-	@mypy conv/conv
-	@mypy act/prolog
+	@mypy lelem/

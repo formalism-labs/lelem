@@ -1,19 +1,19 @@
 
-import os
-import time
-import anthropic
+from ..common import *
 from ..conversation import ConversationBase, DEFAULT_PROLOG
+from ..questions import Question
+from ..prolog import Prolog
+
+import anthropic
 
 default_model = "claude-3-5-haiku-20241022"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model=default_model, prolog=None, temperature=0):
+    def __init__(self, ai, model: str = default_model, prolog: Optional[Prolog] = None, temperature: float = 0):
         super().__init__()
         self.ai = ai
         self.model = model
-        if prolog is None:
-            prolog = DEFAULT_PROLOG
-        self.system_message = str(prolog)
+        self.prolog = DEFAULT_PROLOG if prolog is None else str(prolog)
         self.temperature = temperature
 
     def _question(self, text, role="user"):
@@ -22,13 +22,14 @@ class Conversation(ConversationBase):
     def _answer(self, text, role="assistant"):
         return {"role": role, "content": text}
 
-    def ask(self, q):
+    def ask(self, q: Question):
+        q: str = str(q) # type: ignore[no-redef]
         t0 = time.time()
         self._messages.append(self._question(q))
         try:
             resp = self.ai.messages.create(
                 model=self.model,
-                system=self.system_message,
+                system=self.prolog,
                 messages=self._messages,
                 max_tokens=4096,
                 temperature=self.temperature)

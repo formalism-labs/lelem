@@ -1,10 +1,13 @@
 
-import time
-from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from ..common import *
 from ..conversation import ConversationBase, DEFAULT_PROLOG
+from ..questions import Question
+from ..prolog import Prolog
+
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
 
 class Conversation(ConversationBase):
-    def __init__(self, chat, model=None, prolog=None):
+    def __init__(self, chat, model: Optional[str] = None, prolog: Optional[Prolog] = None):
         super().__init__()
         self.chat = chat
         if model is None:
@@ -14,23 +17,21 @@ class Conversation(ConversationBase):
                 raise Exception("cannot determine model name")
         else:
             self.model = model
-        if prolog is None:
-            prolog = DEFAULT_PROLOG
-        self.prolog = str(prolog)
+        self.prolog = DEFAULT_PROLOG if prolog is None else str(prolog)
         self._messages = [SystemMessage(content=self.prolog)]
     
-    def ask(self, q):
+    def ask(self, q: Question):
         t0 = time.time()
-        self._messages.append(HumanMessage(content=q))
+        self._messages.append(HumanMessage(content=q.text))
         try:
             resp = self.chat.invoke(self._messages)
         except Exception as x:
-            print(f"When asking: {q}\nAn error occurred: {x}")
+            print(f"When asking: {q.text}\nAn error occurred: {x}")
             raise x
         input_tokens = output_tokens = total_tokens = 0
         if isinstance(resp, str):
             answer = resp
-            input_tokens = self.chat.get_num_tokens(q)
+            input_tokens = self.chat.get_num_tokens(q.text)
             output_tokens = self.chat.get_num_tokens(resp)
             total_tokens = input_tokens + output_tokens
         elif hasattr(resp, 'content'):

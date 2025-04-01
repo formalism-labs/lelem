@@ -3,9 +3,16 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-actor"
+name = "lelem"
 version = "1.0.0"
 dynamic = ["dependencies"]
 
+[project.scripts]
+lelem = "lelem.lelem:main"
+prolog = "lelem.prolog:main"
+
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
+
+[tool.mypy]
+# disable_error_code = ["no-redef"]

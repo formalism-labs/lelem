@@ -1,3 +1,4 @@
+-e paella
 openai
 anthropic
 google-genai

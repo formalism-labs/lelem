@@ -1,6 +1,7 @@
 
 from .common import *
 from .models import Model, Models
+from .questions import Question
 from .prolog import Prolog
 
 DEFAULT_PROLOG = """
@@ -16,10 +17,14 @@ class ConversationBase:
         self._conv = []
         self.total_tokens = 0
 
-    def add_qa(self, question, answer, time, cost):
-        self._conv.append({'question': question, 'answer': answer, 'time': time, 'cost': cost})
+    @abstractmethod
+    def ask(self, q: Question):
+        pass
 
-    def message_cost(self, role, i):
+    def add_qa(self, question: Question, answer: str, time: float, cost: Any):
+        self._conv.append({'question': str(question), 'answer': answer, 'time': float, 'cost': cost})
+
+    def message_cost(self, role: str, i: int):
         if role == "assistant":
             cost = self.messages_cost[i]['output']
         elif role == "user":
@@ -78,35 +83,34 @@ class ConversationBase:
 
         # print(yaml.dump(self.conversation(), sort_keys=False, default_flow_style=False, Dumper=MultiLineDumper))
 
-def create_conv(default_model_name: str = None, prolog: Prolog = None, temperature: float = 0):
+def find_model(model_name):
     models = Models()
-    model_name = os.getenv("MODEL", "") or default_model_name
     model = models.match(model_name)
     if model == []:
         print(f"Error: no model matches {model_name}")
         exit(1)
     elif isinstance(model, list):
         matched_models = model
-        perfect_match = None
         for m in matched_models:
             if m.name == model_name:
-                perfect_match = m
-                break
-        if perfect_match is None:
-            print(f"Error: more than one model match: {[model.name for model in model]}")
-            exit(1)
-        model = perfect_match
+                return m
+        print(f"Error: more than one model match: {[model.name for model in model]}")
+        exit(1)
+    return model
 
-    use_langchain = os.getenv("LC", False)
+def create_conv(model_name: Optional[str] = None, prolog: Optional[Prolog] = None, use_langchain: bool = False, temperature: float = 0) -> ConversationBase:
+    model = find_model(model_name)
+
     if use_langchain:
         from langchain_core.language_models.chat_models import BaseChatModel
-        from llm_actor.langchain import Conversation
-        lc_chart: BaseChatModel = None
+        from lelem.langchain import Conversation # type: ignore
+        lc_chat: Any = None # Optional[BaseChatModel]
+        ai: Any = None
 
     if model.by == "openai":
         if not use_langchain:
             from openai import OpenAI
-            from llm_actor.openai.responses import Conversation
+            from lelem.openai.responses import Conversation # type: ignore
             ai = OpenAI()
         else:
             from langchain_openai import ChatOpenAI
@@ -114,7 +118,7 @@ def create_conv(default_model_name: str = None, prolog: Prolog = None, temperatu
     elif model.by == "anthropic":
         if not use_langchain:
             import anthropic
-            from llm_actor.anthropic import Conversation
+            from lelem.anthropic import Conversation # type: ignore
             api_key = os.getenv("ANTHROPIC_API_KEY")
             ai = anthropic.Anthropic(api_key=api_key)
         else:
@@ -122,7 +126,7 @@ def create_conv(default_model_name: str = None, prolog: Prolog = None, temperatu
     elif model.by == "google":
         if not use_langchain:
             from google import genai
-            from llm_actor.gemini import Conversation
+            from lelem.gemini import Conversation # type: ignore
             api_key = os.getenv("GOOGLE_API_KEY")
             ai = genai.Client(api_key=api_key)
         else:
@@ -131,12 +135,12 @@ def create_conv(default_model_name: str = None, prolog: Prolog = None, temperatu
     elif model.by == "deepseek":
         if not use_langchain:
             import openai
-            from llm_actor.deepseek import Conversation
+            from lelem.deepseek import Conversation # type: ignore
             api_key = os.getenv("DEEPSEEK_API_KEY")
             ai = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
         else:
             from langchain_deepseek import ChatDeepSeek
-            lc_chat = ChatDeepSeek(model_name=model.full_name, temperature=temperature)
+            lc_chat = ChatDeepSeek(model=model.full_name, temperature=temperature)
     elif model.ollama:
         if use_langchain:
             from langchain_ollama import ChatOllama
@@ -145,7 +149,7 @@ def create_conv(default_model_name: str = None, prolog: Prolog = None, temperatu
             raise Exception("native ollama is not supported yet")
 
     if not use_langchain:
-        conv = Conversation(ai, model=model.full_name, prolog=prolog, temperature=temperature)
+        conv = Conversation(ai, model=model.full_name, prolog=prolog, temperature=temperature) # type: ignore
     else:
-        conv = Conversation(lc_chat, model=model.full_name, prolog=prolog)
+        conv = Conversation(lc_chat, model=model.full_name, prolog=prolog) # type: ignore
     return conv

@@ -1,5 +1,6 @@
 
 from .common import * # noqa: F403, F401
+import paella # type: ignore
 
 class Prolog:
     def __init__(self, fpath = "prologs/apprentice-system.1"):
@@ -22,3 +23,22 @@ class Prolog:
 
     def __str__ (self):
         return self.text
+
+def main():
+    import tiktoken
+
+    if len(sys.argv) > 1:
+        fname = sys.argv[1]
+    else:
+        fname = "prologs/apprentice-system.1"
+    prolog = str(Prolog(fname))
+    print("\n" + prolog)
+
+    model = os.getenv("MODEL", "gpt-4o-mini")
+    try:
+        enc = tiktoken.encoding_for_model(model)
+    except:
+        enc = tiktoken.get_encoding(model)
+
+    ntok = len(enc.encode(prolog))
+    print(f"={len(prolog)} [{ntok}]")

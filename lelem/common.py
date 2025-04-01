@@ -1,4 +1,5 @@
 
+from abc import ABC, abstractmethod
 import contextlib
 import os
 import re
@@ -20,3 +21,8 @@ GREEN = Fore.GREEN
 BGREEN = BRI + GREEN
 BLUE = Fore.BLUE
 BBLUE = BRI + BLUE
+
+HERE = os.path.dirname(__file__)
+ROOT = os.path.abspath(os.path.join(HERE, ".."))
+SESSIONS = os.path.abspath(os.path.join(ROOT, "sessions"))
+SPACES = os.path.abspath(os.path.join(ROOT, "../lelem-spaces/spaces"))

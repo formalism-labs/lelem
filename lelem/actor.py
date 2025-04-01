@@ -4,14 +4,14 @@ from .conversation import ConversationBase
 from .questions import Question
 
 class Actor():
-    def __init__(self, conv, space=None):
+    def __init__(self, conv: ConversationBase, space: Optional[str] = None):
         self.conv: ConversationBase = conv
         if space is None:
             raise Exception("no space is given for actor")
         self.space = space
 
     def ask(self, q: Question):
-        answer = self.conv.ask(q.text)
+        answer = self.conv.ask(q)
         if q.noc:
             return answer
         for line in answer.splitlines():
@@ -27,7 +27,7 @@ class Actor():
                 raise Exception(f"error while executing command: {cmd} {words[1:]}") from x
         return answer
 
-    def exec(self, cmd, args, reply=None):
+    def exec(self, cmd: str, args: List[str], reply: Optional[str] = None):
         with contextlib.chdir(self.space):
             if cmd == 'fread':
                 q = command_fread(args[0])
@@ -40,7 +40,7 @@ class Actor():
     def print_summary(self):
         self.conv.print_summary()
 
-def command_fread(filepath, reply=None):
+def command_fread(filepath: str, reply: Optional[str] = None):
     text = ""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -53,13 +53,13 @@ def command_fread(filepath, reply=None):
     except:
         return f"file {filepath} does not exist"
 
-def command_fwrite(filepath, text, reply=None):
+def command_fwrite(filepath, text: str, reply: Optional[str] = None):
     pass
 
-def command_patch(filepath, text, reply=None):
+def command_patch(filepath, text: str, reply: Optional[str] = None):
     pass
 
-def command_git_add(filepath, text, reply=None):
+def command_git_add(filepath, text: str, reply: Optional[str] = None):
     pass
 
 commands = {

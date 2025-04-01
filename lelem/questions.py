@@ -1,10 +1,6 @@
 
 from .common import * # noqa: F403, F401
 
-HERE = os.path.dirname(__file__)
-ROOT = os.path.abspath(os.path.join(HERE, ".."))
-SESSIONS = os.path.abspath(os.path.join(ROOT, "sessions"))
-
 class Question:
     def __init__(self, text: str = ""):
         self.text = text.strip()
@@ -23,7 +19,7 @@ class Question:
         return self.text
 
 class Questions:
-    def __init__(self, qfile):
+    def __init__(self, qfile: str):
         self._questions : List[Question] = []
         qfile0 = qfile
         if not os.path.exists(qfile):

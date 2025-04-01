@@ -1,0 +1,72 @@
+
+from .common import *
+import os
+import argparse
+from lelem import Model, Models, Question, Questions, Prolog, Actor, create_conv
+
+DEFAULT_MODEL = "gemini-2.0-flash-lite"
+
+def find_questions(dir, prefix):
+    if dir == "":
+        dir = "."
+    elif not os.path.isdir(dir):
+        return None
+    files = [f for f in os.listdir(dir) if f.startswith(prefix)]
+    if len(files) == 1:
+        return files[0]
+    return None
+
+def main():
+    parser = argparse.ArgumentParser(description='LLM conversation')
+    parser.add_argument('-m', '--model', type=str, default=DEFAULT_MODEL, help=f"Use given model (default: {DEFAULT_MODEL})")
+    parser.add_argument('--lc', action="store_true", help='Use LangChain')
+    parser.add_argument('-a', '--actor', action="store_true", help='Actor mode')
+    parser.add_argument('-p', '--prolog', type=str, default='prologs/apprentice-system.1', help="Use given prolog")
+    parser.add_argument('-q', '--questions', type=str, default='004-bolt', help="Questions file")
+    parser.add_argument('--space', type=str, help='Operate inside given space')
+    parser.add_argument('-s', '--summary', action="store_true", help='Print summary')
+    args = parser.parse_args()
+
+    is_actor = args.actor
+
+    prolog = None
+    if is_actor:
+        fprolog = args.prolog
+        if fprolog != "":
+            prolog = Prolog(fprolog)
+
+    conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
+
+    if is_actor:
+        space = "../llm-actor-spaces/spaces/001"
+        act = Actor(conv, space=space)
+        x_conv = act
+    else:
+        x_conv = conv
+
+    def ask(q: Question):
+        q.pprint()
+        if is_actor:
+            a = x_conv.ask(q).strip()
+        else:
+            a = x_conv.ask(str(q)).strip()
+        if "\n" in a:
+            print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
+        else:
+            print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+
+    try:
+        fquestions = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
+        if fquestions is None:
+            fquestions = fquestions = find_questions("sessions", args.questions)
+            if fquestions is None:
+                print(f"Error: cannot find {fquestions}")
+                exit(1)
+        qq = Questions(fquestions)
+        for q in qq:
+            ask(q)
+        if args.summary:
+            conv.print_summary()
+    except Exception as x:
+        print(f"Error: {x}")
+        conv.print_summary()

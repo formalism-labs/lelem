@@ -4,8 +4,9 @@
 import time
 # from google import genai
 import google.generativeai as genai
-from google.genai import types
+from google.genai import types # type: ignore
 from ..conversation import ConversationBase, DEFAULT_PROLOG
+from ..questions import Question
 
 default_model = "gemini-2.0-flash-lite-preview-02-05"
 
@@ -35,7 +36,8 @@ class Conversation(ConversationBase):
     def _count_tokens(self, text):
         return self.ai.models.count_tokens(model=self.model, contents=text).total_tokens
     
-    def ask(self, q):
+    def ask(self, q: Question):
+        q: str = str(q) # type: ignore[no-redef]
         t0 = time.time()
         self._messages.append(self._question(q))
         input_tokens = self._count_tokens(q)

@@ -1,10 +1,6 @@
 
 from .common import * # noqa: F403, F401
 
-HERE = os.path.dirname(__file__)
-ROOT = os.path.abspath(os.path.join(HERE, ".."))
-SPACES = os.path.abspath(os.path.join(ROOT, "../llm-actor-spaces/spaces"))
-
 class ModelProperties(TypedDict):
     by: str
     default: Optional[bool]
