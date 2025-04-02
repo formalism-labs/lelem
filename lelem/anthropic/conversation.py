@@ -1,4 +1,6 @@
 
+# pip install anthropic
+
 from ..common import *
 from ..conversation import ConversationBase, DEFAULT_PROLOG
 from ..questions import Question
@@ -6,26 +8,25 @@ from ..prolog import Prolog
 
 import anthropic
 
-default_model = "claude-3-5-haiku-20241022"
+DEFAULT_MODEL = "claude-3-5-haiku-20241022"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model: str = default_model, prolog: Optional[Prolog] = None, temperature: float = 0):
+    def __init__(self, ai, model: str = DEFAULT_MODEL, prolog: Optional[Prolog] = None, temperature: float = 0):
         super().__init__()
         self.ai = ai
         self.model = model
         self.prolog = DEFAULT_PROLOG if prolog is None else str(prolog)
         self.temperature = temperature
 
-    def _question(self, text, role="user"):
+    def _question(self, text: str, role: str = "user"):
         return {"role": role, "content": text}
 
-    def _answer(self, text, role="assistant"):
+    def _answer(self, text: str, role: str = "assistant"):
         return {"role": role, "content": text}
 
     def ask(self, q: Question):
-        q: str = str(q) # type: ignore[no-redef]
         t0 = time.time()
-        self._messages.append(self._question(q))
+        self._messages.append(self._question(q.text))
         try:
             resp = self.ai.messages.create(
                 model=self.model,
@@ -34,7 +35,7 @@ class Conversation(ConversationBase):
                 max_tokens=4096,
                 temperature=self.temperature)
         except Exception as x:
-            raise Exception(f"When asking: '{q}', an error occurred: {x}") from x
+            raise Exception(f"When asking: '{q.text}', an error occurred: {x}") from x
         answer = resp.content[0].text
         self._messages.append(self._answer(answer))
 

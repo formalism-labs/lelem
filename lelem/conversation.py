@@ -54,7 +54,7 @@ class ConversationBase:
                 title = role
             cost = self.message_cost(role, i)
             if title == 'Q':
-                t += f"{BRED}{title}({cost}):{NOC} {BRI + BLUE}{text}{NOC}\n"
+                t += f"{BRED}{title}({cost}):{NOC} {BBLUE}{text}{NOC}\n"
             else:
                 t += f"{BRED}{title}({cost}):{NOC} {BLUE}{text}{NOC}\n"
             i += 1

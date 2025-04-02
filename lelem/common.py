@@ -13,7 +13,7 @@ import yaml
 # from rich.console import Console
 from colorama import Fore, Style
 
-BRI = Style.BRIGHT
+BRI = BOLD = Style.BRIGHT
 BW = NOC = Style.RESET_ALL
 RED = Fore.RED
 BRED = BRI + RED

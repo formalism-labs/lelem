@@ -1,4 +1,6 @@
 
+# pip install openai
+
 from ...common import *
 from ...conversation import ConversationBase, DEFAULT_PROLOG
 from ...questions import Question
@@ -6,10 +8,10 @@ from ...prolog import Prolog
 
 from openai import OpenAI
 
-default_model = "gpt-4o-mini"
+DEFAULT_MODEL = "gpt-4o-mini"
 
 class Conversation(ConversationBase):
-    def __init__(self, ai, model: str = default_model, prolog: Optional[Prolog] = None, temperature: float = 0):
+    def __init__(self, ai, model: str = DEFAULT_MODEL, prolog: Optional[Prolog] = None, temperature: float = 0):
         super().__init__()
         self.ai = ai
         self.model = model
