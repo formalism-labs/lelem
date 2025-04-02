@@ -17,7 +17,7 @@ def find_questions(dir, prefix):
     return None
 
 def main():
-    parser = argparse.ArgumentParser(description='LLM conversation')
+    parser = argparse.ArgumentParser(description='Conversation with lelem that asks')
     parser.add_argument('-m', '--model', type=str, default=DEFAULT_MODEL, help=f"Use given model (default: {DEFAULT_MODEL})")
     parser.add_argument('--lc', action="store_true", help='Use LangChain')
     parser.add_argument('-a', '--actor', action="store_true", help='Actor mode')

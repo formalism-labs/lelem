@@ -1,23 +1,22 @@
 
-IMAGE=llm-actor:1
-CONT=llm-actor
+IMAGE=lelem:1
+CONT=lelem
 
-# GPT=comp|resp
-# GEM
-# ANT
-# DEEP
-# LC langchain
-# OPEN openai completions API, can handle GEM, DEEP
+DOCKER_RUN_ARGS=--name $(CONT) -it --rm -v $(PWD):/x -w /x
+
+if ($(DIAG),1)
+DOCKER_RUN_ARGS += -d
+endif
+
+ifneq ($(DEVKA),)
+DOCKER_RUN_ARGS += -v /v:/v
+endif
 
 build:
 	@docker buildx build --build-context classico=/v/classico/classico -t $(IMAGE) .
 
 run:
-ifeq ($(DIAG),1)
-	@docker run --name $(CONT) -it --rm -v /v:/v $(IMAGE)
-else
-	@docker run -d --name $(CONT) -it --rm -v /v:/v $(IMAGE)
-endif
+	@docker run $(DOCKER_RUN_ARGS) $(IMAGE)
 
 ps:
 	@docker ps
