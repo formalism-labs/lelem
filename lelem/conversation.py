@@ -4,11 +4,6 @@ from .models import Model, Models
 from .questions import Question
 from .prolog import Prolog
 
-DEFAULT_PROLOG = """
-You are a knowledgeable and articulate AI assistant.
-Keep your answer very concise. Do not provide extra information unless asked.
-"""
-
 class ConversationBase:
     def __init__(self):
         self.t0 = time.time()

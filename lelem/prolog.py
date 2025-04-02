@@ -2,6 +2,11 @@
 from .common import * # noqa: F403, F401
 import paella # type: ignore
 
+DEFAULT_PROLOG = """
+You are a knowledgeable and articulate AI assistant.
+Keep your answer very concise. Do not provide extra information unless asked.
+"""
+
 class Prolog:
     def __init__(self, fpath = "prologs/apprentice-system.1"):
         self.text = ""

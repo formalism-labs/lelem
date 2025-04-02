@@ -1,8 +1,8 @@
 
 from ...common import *
-from ...conversation import ConversationBase, DEFAULT_PROLOG
+from ...conversation import ConversationBase
 from ...questions import Question
-from ...prolog import Prolog
+from ...prolog import Prolog, DEFAULT_PROLOG
 
 import openai
 
@@ -13,10 +13,7 @@ class Conversation(ConversationBase):
         super().__init__()
         self.ai = ai
         self.model = model
-        if prolog is None:
-            self.prolog = DEFAULT_PROLOG
-        else:
-            self.prolog = str(prolog)
+        self.prolog = DEFAULT_PROLOG if prolog is None else str(prolog)
         self._messages = [self._question(self.prolog, role="system")]
         self.temperature = temperature
 

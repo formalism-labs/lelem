@@ -33,13 +33,13 @@ def main():
         exit(0)
 
     try:
-        fquestions = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
-        if fquestions is None:
-            fquestions = fquestions = find_questions("sessions", args.questions)
-            if fquestions is None:
-                print(f"Error: cannot find {fquestions}")
+        questions_file = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
+        if questions_file is None:
+            questions_file = find_questions("sessions", args.questions)
+            if questions_file is None:
+                print(f"Error: cannot find {questions_file}")
                 exit(1)
-        qq = Questions(fquestions)
+        qq = Questions(questions_file)
 
         is_actor = args.actor or qq.actor
 

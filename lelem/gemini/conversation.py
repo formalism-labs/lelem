@@ -2,9 +2,9 @@
 # pip install google-generativeai
 
 from ..common import *
-from ..conversation import ConversationBase, DEFAULT_PROLOG
+from ..conversation import ConversationBase
 from ..questions import Question
-from ..prolog import Prolog
+from ..prolog import Prolog, DEFAULT_PROLOG
 
 # from google import genai
 import google.generativeai as genai
@@ -21,7 +21,6 @@ class Conversation(ConversationBase):
         self.temperature = temperature
 
         self.config = types.GenerateContentConfig(
-            # system_instruction=self.system_message,
             max_output_tokens=4096,
             temperature=temperature)
         self.gen_model = genai.GenerativeModel(model, system_instruction=self.prolog)

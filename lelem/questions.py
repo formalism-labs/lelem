@@ -37,7 +37,7 @@ class Questions:
             if not os.path.exists(qfile):
                 raise Exception(f"Questions file '{qfile0}' cannot be found")
         self._file = qfile
-        with open(qfile, "r") as  file:
+        with open(qfile, "r") as file:
             q = None
             for line in file:
                 if line[0] == '#':
