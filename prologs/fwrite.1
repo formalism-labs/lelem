@@ -1,6 +1,16 @@
- # @fwrite command
-When requested to write a program, rather than printing it as a reply, write it into a file using the following command:
-@fwrite file-path
-...
+ # **@fwrite** @-command
+When you need to write the content of a file in the workspace, you can issue the command "@fwrite filepath", with "filepath" being the path to a file in the workspace.
+That is, when requested to generate a file, rather than printing it as a reply, write it into a the workspace using the @fwrite command.
+A **@fwrite command** consists of three components, as follows:
+@fwrite filepath
+CONTENT
 @end
-where ... is the place for program code.
+
+1. **Command Invocation:** The sequence begins with `@fwrite`, followed by a **file path** (`filepath`), specifying the target file.  
+2. **Content Block:** The subsequent lines contain the **content** (`CONTENT`) to be written to the file.  
+3. **Termination Indicator:** The sequence ends with `@end`, marking the conclusion of the content block.  
+
+The `CONTENT` section may span multiple lines and is interpreted as the exact text to be written to the specified file.
+If inside the content there is a line starting with "@end", it should be prefixed with a `\` character.
+
+When writing `CONTENT` do not use backticks.
