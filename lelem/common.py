@@ -25,4 +25,5 @@ BBLUE = BRI + BLUE
 HERE = os.path.dirname(__file__)
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 SESSIONS = os.path.abspath(os.path.join(ROOT, "sessions"))
+PROLOGS = os.path.abspath(os.path.join(ROOT, "prologs"))
 SPACES = os.path.abspath(os.path.join(ROOT, "../lelem-spaces/spaces"))

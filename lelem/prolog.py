@@ -8,11 +8,19 @@ Keep your answer very concise. Do not provide extra information unless asked.
 """
 
 class Prolog:
-    def __init__(self, fpath = "prologs/apprentice-system.1"):
+    def __init__(self, fpath = f"{PROLOGS}/apprentice-system.1"):
+        fpath0 = fpath
         self.text = ""
+        if not os.path.exists(fpath):
+            fpath = f"{PROLOGS}/{fpath}"
+            if not os.path.exists(fpath):
+                raise Exception("Prolog: {fpath0} not found")
         fdir = os.path.dirname(fpath)
         with open(fpath, "r") as file:
             for line in file:
+                if line[0] == '\\':
+                    self.text += line[1:]
+                    continue
                 if line[0] == '#':
                     continue
                 if line[0] == '@':
@@ -30,20 +38,30 @@ class Prolog:
         return self.text
 
 def main():
+    import argparse
     import tiktoken
+    from rich.console import Console
+    from rich.markdown import Markdown
 
-    if len(sys.argv) > 1:
-        fname = sys.argv[1]
+    parser = argparse.ArgumentParser(description='Display lelem prolog')
+    parser.add_argument('-m', '--model', type=str, default="gpt-4o-mini", help=f"Use given model for token estimation")
+    parser.add_argument('-x', '--markdown', action="store_true", help='Display as Markdown')
+    parser.add_argument('name', nargs="?", default="apprentice-system.1", help='Prolog name')
+    args = parser.parse_args()
+
+    prolog = str(Prolog(args.name))
+    if args.markdown:
+        print()
+        console = Console()
+        console.print(Markdown(prolog.replace("\n", "  \n")))
+        print()
     else:
-        fname = "prologs/apprentice-system.1"
-    prolog = str(Prolog(fname))
-    print("\n" + prolog)
+        print("\n" + prolog)
 
-    model = os.getenv("MODEL", "gpt-4o-mini")
     try:
-        enc = tiktoken.encoding_for_model(model)
+        enc = tiktoken.encoding_for_model(args.model)
     except:
-        enc = tiktoken.get_encoding(model)
+        enc = tiktoken.get_encoding(args.model)
 
     ntok = len(enc.encode(prolog))
     print(f"={len(prolog)} [{ntok}]")
