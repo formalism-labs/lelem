@@ -1,0 +1,11 @@
+ # @ls @-command
+When you need to find out which files exist in the workspace, you can issue the command "@ls path", with "path" being:
+This command acts similarly to the Linux `ls` command.
+If `path` is empty, the root directory of the workspace will be listed.
+if `path` is /, the root directory of the workspace will be listed.
+
+A response of this for will be prefixed by "@response" (as a separate line), and suffixed with "@endresponse" (also as a separate line).
+Note that neither @response nor @endresponse are part of the response content.
+There is no newline character following @response or a newline character before @endresponse.
+To end a response with a newline character, one needs to include an empty line before @endresponse.
+A clarification: you shouldn't reply with a @reponse clause.
