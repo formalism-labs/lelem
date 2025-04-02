@@ -2,18 +2,25 @@
 from .common import * # noqa: F403, F401
 
 class Question:
-    def __init__(self, text: str = ""):
-        self.text = text.strip()
+    def __init__(self, text: str = "", response: bool = False):
+        self.response = response
+        self.text = ""
         self.noc = False # no commands flag
+        if text != "":
+            self.append_line(text)
 
     def append_line(self, line):
+        if line == "@noc":
+            q.noc = True
+            return
         self.text += ("\n" if self.text != "" else "") + line
 
     def is_multiline(self):
         return "\n" in self.text
 
     def pprint(self):
-        print(f"\n{RED}Q: {BW}{BBLUE}{self.text}{BW}")
+        color = BLUE if self.response else BBLUE
+        print(f"\n{RED}Q: {BW}{color}{self.text}{BW}")
 
     def __str__ (self):
         return self.text
@@ -21,11 +28,15 @@ class Question:
 class Questions:
     def __init__(self, qfile: str):
         self._questions : List[Question] = []
+        self.actor = False
+        self.space = None
+
         qfile0 = qfile
         if not os.path.exists(qfile):
             qfile = f"{SESSIONS}/{qfile}"
             if not os.path.exists(qfile):
-                raise Exception(f"{qfile0} cannot be found")
+                raise Exception(f"Questions file '{qfile0}' cannot be found")
+        self._file = qfile
         with open(qfile, "r") as  file:
             q = None
             for line in file:

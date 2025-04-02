@@ -20,5 +20,6 @@ RUN uv pip install -r requirements.txt
 RUN git config --global --add safe.directory /v/prj/llm-actor-spaces/spaces
 RUN git config --global user.email "robot@formalism-labs.com"
 RUN git config --global user.name "Robot"
+RUN git config --global safe.directory '*'
 
 CMD ["/bin/bash", "-l"]
