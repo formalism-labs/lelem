@@ -69,6 +69,6 @@ deepseek-r1:
   params: 8
   ollama: true
 'qwq:32b':
-  by': qwen'
+  by: alibaba
   params: 32
   ollama: true

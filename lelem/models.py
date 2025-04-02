@@ -19,6 +19,7 @@ class Models:
     def __init__(self, yaml_file: str = ROOT + "/models.yml"):
         self._yaml: Dict[str, ModelProperties] = {}
         self._models: Dict[str, Model] = {}
+        self._yaml_file = yaml_file
         with open(yaml_file, "r") as file:
             self._yaml = yaml.safe_load(file)
 
@@ -36,3 +37,9 @@ class Models:
         if len(models) == 1:
             return models[0]
         return models
+
+    def print_table(self):
+        from tabulate import tabulate
+
+        table = [{"model": key, **value} for key, value in self._yaml.items()]
+        print(tabulate(table, headers="keys", tablefmt="grid"))
