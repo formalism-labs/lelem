@@ -11,7 +11,7 @@ class Question:
 
     def append_line(self, line):
         if line == "@noc":
-            q.noc = True
+            self.noc = True
             return
         self.text += ("\n" if self.text != "" else "") + line
 

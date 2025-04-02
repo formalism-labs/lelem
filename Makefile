@@ -4,7 +4,7 @@ CONT=lelem
 
 DOCKER_RUN_ARGS=--name $(CONT) -it --rm -v $(PWD):/x -w /x
 
-if ($(DIAG),1)
+ifeq ($(DIAG),1)
 DOCKER_RUN_ARGS += -d
 endif
 

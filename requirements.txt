@@ -1,4 +1,4 @@
--e paella
+paella
 openai
 anthropic
 google-genai
@@ -9,5 +9,6 @@ langchain-google-genai
 langchain-deepseek
 langchain-ollama
 tiktoken
+colorama
 rich
 tabulate

@@ -8,7 +8,7 @@ One specific behavior `lelem` should help to achieve is the possibility to condu
 
 Future behaviors may include planning (making a plan, interact over it with the human operator, and executing it), RAG functionality, model memory management (to avoid overloading the context), and collaboration among several models (local and cloud-based).
 
-The name `lelem` is best pronounced using Georgian accent.
+The name `lelem` is best pronounced with a Georgian accent.
 
 ## Components
 

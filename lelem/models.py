@@ -8,8 +8,11 @@ class ModelProperties(TypedDict):
 class Model:
     def __init__(self, name: str, properties: ModelProperties):
         self.__dict__ = cast(Dict[str, Any], properties)
+        try:
+            self.full_name = self.name or name
+        except:
+            self.full_name = name
         self.name = name
-        self.full_name = str(properties.get("name", name))
         self.default = properties.get("default", False)
 
     def __repr__(self):

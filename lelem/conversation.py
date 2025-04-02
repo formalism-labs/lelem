@@ -139,7 +139,7 @@ def create_conv(model_name: Optional[str] = None, prolog: Optional[Prolog] = Non
     elif model.ollama:
         if use_langchain:
             from langchain_ollama import ChatOllama
-            lc_chat = ChatOllama(model=model.full_name, temperature=temperature, n_gpu_layers=-1)
+            lc_chat = ChatOllama(model=model.full_name, temperature=temperature) #, n_gpu_layers=-1)
         else:
             raise Exception("native ollama is not supported yet")
 
