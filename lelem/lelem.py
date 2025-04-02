@@ -25,35 +25,12 @@ def main():
     parser.add_argument('-q', '--questions', type=str, default='004-bolt', help="Questions file")
     parser.add_argument('--space', type=str, help='Operate inside given space')
     parser.add_argument('-s', '--summary', action="store_true", help='Print summary')
+    parser.add_argument('--models', action="store_true", help='Print models')
     args = parser.parse_args()
 
-    is_actor = args.actor
-
-    prolog = None
-    if is_actor:
-        fprolog = args.prolog
-        if fprolog != "":
-            prolog = Prolog(fprolog)
-
-    conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
-
-    if is_actor:
-        space = "../llm-actor-spaces/spaces/001"
-        act = Actor(conv, space=space)
-        x_conv = act
-    else:
-        x_conv = conv
-
-    def ask(q: Question):
-        q.pprint()
-        if is_actor:
-            a = x_conv.ask(q).strip()
-        else:
-            a = x_conv.ask(str(q)).strip()
-        if "\n" in a:
-            print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
-        else:
-            print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+    if args.models:
+        Models().print_table()
+        exit(0)
 
     try:
         fquestions = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
@@ -63,10 +40,39 @@ def main():
                 print(f"Error: cannot find {fquestions}")
                 exit(1)
         qq = Questions(fquestions)
+
+        is_actor = args.actor or qq.actor
+
+        prolog = None
+        if is_actor:
+            fprolog = args.prolog
+            if fprolog != "":
+                prolog = Prolog(fprolog)
+
+        conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
+
+        x_conv = None
+
+        def ask(q: Question):
+            q.pprint()
+            a = x_conv.ask(q).strip()
+            if "\n" in a:
+                print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
+            else:
+                print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+
+        if is_actor or qq.actor:
+            space = qq.space or f"{SPACES}/001"
+            act = Actor(conv, space=space)
+            x_conv = act
+        else:
+            x_conv = conv
+
         for q in qq:
             ask(q)
         if args.summary:
             conv.print_summary()
     except Exception as x:
-        print(f"Error: {x}")
+        print(f"{BRED}Error: {x}{BW}")
+        sys.excepthook(type(x), x, x.__traceback__)
         conv.print_summary()

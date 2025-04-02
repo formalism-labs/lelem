@@ -8,6 +8,11 @@ class Actor():
         self.conv: ConversationBase = conv
         if space is None:
             raise Exception("no space is given for actor")
+        space0 = space
+        if not os.path.isdir(space):
+            space = f"{SPACES}/{space}"
+            if not os.path.isdir(space):
+                raise Exception(f"space not found: {space0}")
         self.space = space
 
     def ask(self, q: Question):
@@ -24,17 +29,18 @@ class Actor():
                     cmd = w[1:]
                     return self.exec(cmd, words[1:], reply=answer)
             except Exception as x:
-                raise Exception(f"error while executing command: {cmd} {words[1:]}") from x
+                raise Exception(f"error executing command: {cmd} {words[1:]}") from x
         return answer
 
     def exec(self, cmd: str, args: List[str], reply: Optional[str] = None):
         with contextlib.chdir(self.space):
             if cmd == 'fread':
-                q = command_fread(args[0])
+                answer = command_fread(args[0])
             elif cmd == 'fwrite':
-                q = command_fwrite(args[0], reply=reply)
+                answer = command_fwrite(args[0], reply=reply)
             else:
                 return f"there is no command named @{cmd}. please revise."
+        q = Question(answer, response=True)
         return self.conv.ask(q)
 
     def print_summary(self):

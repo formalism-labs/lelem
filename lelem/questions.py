@@ -37,26 +37,30 @@ class Questions:
                 if q is None:
                     if line[0:2] == 'Q:':
                         t = line[2:].strip()
-                        q = Question()
-                        if t == "@noc":
-                            q.noc = True
-                        else:
-                            q.append_line(t)
-                    else:
-                        # comments or directives here
+                        q = Question(t)
+                    elif line[0] == '@':
+                        self.process_directive(line)
                         continue
                 elif line[0:2] == 'Q:':
                     self._questions.append(q)
                     t = line[2:].strip()
-                    q = Question()
-                    if t == "@noc":
-                        q.noc = True
-                    else:
-                        q.append_line(t)
+                    q = Question(t)
                 else:
                     q.append_line(line)
             if q is not None:
                 self._questions.append(q)
+
+    def process_directive(self, line):
+        words = line[1:].split()
+        if words[0] == 'actor':
+            self.actor = True
+            return
+        if words[0] == 'space':
+            if len(words) < 2:
+                raise Exception(f"in {self._file}: invalid space specification: {line}")
+            self.space = words[1]
+            return
+        raise Exception(f"in {self._file}: invalid directive: {line}")
 
     def __iter__(self):
         return iter(self._questions)
