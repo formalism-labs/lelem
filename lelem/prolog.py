@@ -8,7 +8,7 @@ Keep your answer very concise. Do not provide extra information unless asked.
 """
 
 class Prolog:
-    def __init__(self, fpath = f"{PROLOGS}/apprentice-system.1"):
+    def __init__(self, fpath: str = f"{PROLOGS}/apprentice-system.1", comments: bool = True):
         fpath0 = fpath
         self.text = ""
         if not os.path.exists(fpath):
@@ -27,7 +27,7 @@ class Prolog:
                     fpath1 = os.path.join(fdir, line.strip()[1:])
                     with open(fpath1, "r") as file1:
                         for line1 in file1:
-                            if line1[0] == '#':
+                            if comments and line1[0] == '#':
                                 continue
                             self.text += line1
                         self.text += "\n"
@@ -46,17 +46,19 @@ def main():
     parser = argparse.ArgumentParser(description='Display lelem prolog')
     parser.add_argument('-m', '--model', type=str, default="gpt-4o-mini", help=f"Use given model for token estimation")
     parser.add_argument('-x', '--markdown', action="store_true", help='Display as Markdown')
+    parser.add_argument('--no-comments', action="store_true", help='Disallow comments in included files')
     parser.add_argument('name', nargs="?", default="apprentice-system.1", help='Prolog name')
     args = parser.parse_args()
 
-    prolog = str(Prolog(args.name))
+    prolog = Prolog(args.name, comments=not args.no_comments)
+    text = str(prolog)
     if args.markdown:
         print()
         console = Console()
-        console.print(Markdown(prolog.replace("\n", "  \n")))
+        console.print(Markdown(text.replace("\n", "  \n")))
         print()
     else:
-        print("\n" + prolog)
+        print("\n" + text)
 
     try:
         enc = tiktoken.encoding_for_model(args.model)
