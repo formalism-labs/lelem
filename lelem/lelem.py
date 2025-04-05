@@ -2,6 +2,7 @@
 from .common import *
 import os
 import argparse
+import readline
 from lelem import Model, Models, Question, Questions, Prolog, Actor, create_conv
 
 DEFAULT_MODEL = "gemini-2.0-flash-lite"
@@ -24,6 +25,7 @@ def main():
     parser.add_argument('-p', '--prolog', type=str, default='prologs/apprentice-system.1', help="Use given prolog")
     parser.add_argument('-q', '--questions', type=str, default='004-bolt', help="Questions file")
     parser.add_argument('--space', type=str, help='Operate inside given space')
+    parser.add_argument('-i', '--interactive', action="store_true", help='Interactive mode')
     parser.add_argument('-s', '--summary', action="store_true", help='Print summary')
     parser.add_argument('--models', action="store_true", help='Print models')
     args = parser.parse_args()
@@ -33,6 +35,31 @@ def main():
         exit(0)
 
     try:
+        if args.interactive:
+            prolog = Prolog()
+            
+            conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
+            if args.actor:
+                space = qq.space or f"{SPACES}/001"
+                act = Actor(conv, space=space)
+                x_conv = act
+            else:
+                x_conv = conv
+
+            qt = input(">>> ")
+            while qt != "/bye":
+                q = Question(qt)
+                a = x_conv.ask(q).strip()
+                if "\n" in a:
+                    print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
+                else:
+                    print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+                qt = input(">>> ")
+            print("So long.")
+            if args.summary:
+                conv.print_summary()
+            exit(0)
+
         questions_file = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
         if questions_file is None:
             questions_file = find_questions("sessions", args.questions)
