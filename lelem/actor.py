@@ -37,10 +37,16 @@ class Actor():
         with contextlib.chdir(self.space):
             if cmd == 'fread':
                 answer = command_fread(args[0])
+                q = Question(answer, response=True)
+                return self.conv.ask(q)
             elif cmd == 'fwrite':
                 return command_fwrite(args[0], reply=reply)
+                q = Question(answer, response=True)
+                return self.conv.ask(q)
             elif cmd == 'ls':
                 answer = command_ls(args, space=self.space, reply=reply)
+                q = Question(answer, response=True)
+                return self.ask(q)
             else:
                 return f"there is no command named @{cmd}. please revise."
         q = Question(answer, response=True)

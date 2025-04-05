@@ -13,7 +13,7 @@ DOCKER_RUN_ARGS += -v /v:/v
 endif
 
 build:
-	@docker buildx build --build-context classico=/v/classico/classico -t $(IMAGE) .
+	@docker buildx build --build-context classico=./classico -t $(IMAGE) .
 
 run:
 	@docker run $(DOCKER_RUN_ARGS) $(IMAGE)
