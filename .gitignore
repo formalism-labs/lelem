@@ -6,3 +6,4 @@ node_modules/
 /keys
 /package-lock.json
 /package.json
+/logs/

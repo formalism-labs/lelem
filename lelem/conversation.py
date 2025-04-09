@@ -1,23 +1,37 @@
 
 from .common import *
-from .models import Model, Models
+from .models import Model, Models, find_model
 from .questions import Question
 from .prolog import Prolog
 
+class ExchangeTokens(TypedDict):
+    input: int
+    output: int
+    total: int
+
+class Exchange(TypedDict):
+    question: str
+    answer: str
+    time: float
+    cost: ExchangeTokens
+
 class ConversationBase:
     def __init__(self):
-        self.t0 = time.time()
+        self.t0: float = time.time()
         self._messages = []
         self.messages_cost = []
-        self._conv = []
+        self._conv: List[Exchange] = []
         self.total_tokens = 0
+        self.space: str = ''
+        self.questions_file: Optional[str] = None
+        self.temperature = 1
 
     @abstractmethod
     def ask(self, q: Question):
         pass
 
     def add_qa(self, question: Question, answer: str, time: float, cost: Any):
-        self._conv.append({'question': str(question), 'answer': answer, 'time': float, 'cost': cost})
+        self._conv.append({'question': str(question), 'answer': answer, 'time': time, 'cost': cost})
 
     def message_cost(self, role: str, i: int):
         if role == "assistant":
@@ -30,7 +44,12 @@ class ConversationBase:
     
     @property
     def messages(self):
-        t = f"model={RED}{self.model}{BW}\n"
+        t = ""
+        t += f"model: {RED}{self.model}{BW}\n"
+        t += f"space: {RED}{self.space}{BW}\n"
+        t += f"termerature: {RED}{self.temperature}{BW}\n"
+        t += "\n"
+
         i = 0
         for m in self._messages:
             role = m["role"]
@@ -60,38 +79,40 @@ class ConversationBase:
     def conversation(self):
         return self._conv
         
-    def questions(self):
+    def questions(self) -> List[str]:
         return list(map(lambda m: m['question'], self._conv))
 
-    def print_summary(self):
-        print('---')
+    @property
+    def summary(self) -> str:
+        #class MultiLineDumper(yaml.Dumper):
+        #    def represent_scalar(self, tag, value, style=None):
+        #        if "\n" in value:
+        #            style = "|"
+        #        return super().represent_scalar(tag, value, style)
+
+        # yaml = yaml.dump(self.conversation(), sort_keys=False, default_flow_style=False, Dumper=MultiLineDumper)
+        data = {
+            'model': self.model,
+            'space': self.space,
+            'temperature': self.temperature
+            }
+        if self.questions_file is not None:
+            data["questions"] = self.questions_file
+            
+        data['conversation'] = self.conversation()
+
+        return yaml.dump(data, sort_keys=False)
+    
+    def log_summary(self):
+        text = self.summary
+        flog = datetime.now().strftime("%Y%m%d-%H%M%S")
+        paella.mkdir_p(LOGS)
+        with open(f"{LOGS}/{flog}.yml", 'w') as file:
+            file.write(text)
+    
+    def print_messages(self):
+        print('---\n')
         print(self.messages)
-        print('---')
-        # print_json(data=self.conversation())
-        # print('---')
-                
-        class MultiLineDumper(yaml.Dumper):
-            def represent_scalar(self, tag, value, style=None):
-                if "\n" in value:
-                    style = "|"
-                return super().represent_scalar(tag, value, style)
-
-        # print(yaml.dump(self.conversation(), sort_keys=False, default_flow_style=False, Dumper=MultiLineDumper))
-
-def find_model(model_name):
-    models = Models()
-    model = models.match(model_name)
-    if model == []:
-        print(f"Error: no model matches {model_name}")
-        exit(1)
-    elif isinstance(model, list):
-        matched_models = model
-        for m in matched_models:
-            if m.name == model_name:
-                return m
-        print(f"Error: more than one model match: {[model.name for model in model]}")
-        exit(1)
-    return model
 
 def create_conv(model_name: Optional[str] = None, prolog: Optional[Prolog] = None, use_langchain: bool = False, temperature: float = 0) -> ConversationBase:
     model = find_model(model_name)
@@ -147,4 +168,6 @@ def create_conv(model_name: Optional[str] = None, prolog: Optional[Prolog] = Non
         conv = Conversation(ai, model=model.full_name, prolog=prolog, temperature=temperature) # type: ignore
     else:
         conv = Conversation(lc_chat, model=model.full_name, prolog=prolog) # type: ignore
+        
+    conv.temperature = temperature
     return conv
