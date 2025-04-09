@@ -1,0 +1,33 @@
+ # **@fwrite** @-command
+
+ ## Request format
+
+@write @-command format:
+
+---BEGIN @-COMMAND---
+{
+	"name": "fwrite",
+	"path": PATH,
+	"content": CONTENT
+}
+---END @-COMMAND---
+
+The `path` key is the path of the file in the workspace (a string).
+The `content` key is the content of the file.
+
+ ## Response format
+
+The user responds with a message affirming that a file by the requested name was written.
+If an error occurred, the message will notify you of what has happened.
+
+ ## Instructions
+
+When you need to write the content of a file in the workspace, use the `@fwrite` @-command.
+That is, when requested to generate a file, rather than printing it as a reply, write it into a the workspace using the `@fwrite` @-command.
+
+ ### Figuring out a name for the file
+
+If the user has explicitly asked to use a specific file name, you should do that.
+When the file name is not given, figure out a reasonable name.
+In this case, you should verify that the name does not already exist in the workspace using the `@ls` @-command.
+If it does, figure out a new name and repeat the process. Don't try to get too smart with this. Just use serial numbers (001, 002, 003, etc.).
