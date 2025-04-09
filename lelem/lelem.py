@@ -17,11 +17,41 @@ def find_questions(dir, prefix):
         return files[0]
     return None
 
+def interactive(args):
+    space = args.space or "001"
+    
+    print(f"model: {RED}{args.model}{BW}")
+    print(f"space: {RED}{space}{BW}")
+    print()
+    
+    prolog = Prolog()
+    
+    conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
+    if args.actor:
+        act = Actor(conv, space=space)
+        x_conv = act
+    else:
+        x_conv = conv
+
+    qt = input(">>> ")
+    while qt != "/bye":
+        q = Question(qt)
+        a = x_conv.ask(q).strip()
+        if "\n" in a:
+            print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
+        else:
+            print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
+        qt = input(">>> ")
+    print("So long.")
+    if args.summary:
+        conv.print_messages()
+    conv.log_summary()
+
 def main():
     parser = argparse.ArgumentParser(description='Conversation with lelem that asks')
     parser.add_argument('-m', '--model', type=str, default=DEFAULT_MODEL, help=f"Use given model (default: {DEFAULT_MODEL})")
     parser.add_argument('--lc', action="store_true", help='Use LangChain')
-    parser.add_argument('-a', '--actor', action="store_true", help='Actor mode')
+    parser.add_argument('--no-actor', action="store_true", help='Disable actor mode')
     parser.add_argument('-p', '--prolog', type=str, default='prologs/apprentice-system.1', help="Use given prolog")
     parser.add_argument('-q', '--questions', type=str, default='004-bolt', help="Questions file")
     parser.add_argument('--space', type=str, help='Operate inside given space')
@@ -36,28 +66,7 @@ def main():
 
     try:
         if args.interactive:
-            prolog = Prolog()
-            
-            conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
-            if args.actor:
-                space = qq.space or f"{SPACES}/001"
-                act = Actor(conv, space=space)
-                x_conv = act
-            else:
-                x_conv = conv
-
-            qt = input(">>> ")
-            while qt != "/bye":
-                q = Question(qt)
-                a = x_conv.ask(q).strip()
-                if "\n" in a:
-                    print(f"{RED}A:\n{BW}{BLUE}{a}{NOC}")
-                else:
-                    print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
-                qt = input(">>> ")
-            print("So long.")
-            if args.summary:
-                conv.print_summary()
+            interactive(args)
             exit(0)
 
         questions_file = find_questions(os.path.dirname(args.questions), os.path.basename(args.questions))
@@ -68,7 +77,7 @@ def main():
                 exit(1)
         qq = Questions(questions_file)
 
-        is_actor = args.actor or qq.actor
+        is_actor = not args.no_actor or qq.actor
 
         prolog = None
         if is_actor:
@@ -77,6 +86,8 @@ def main():
                 prolog = Prolog(fprolog)
 
         conv = create_conv(model_name=args.model, use_langchain=args.lc, prolog=prolog)
+        if questions_file is not None:
+            conv.questions_file = questions_file
 
         x_conv = None
 
@@ -88,7 +99,7 @@ def main():
             else:
                 print(f"{RED}A: {BW}{BLUE}{a}{NOC}")
 
-        if is_actor or qq.actor:
+        if is_actor:
             space = qq.space or f"{SPACES}/001"
             act = Actor(conv, space=space)
             x_conv = act
@@ -98,8 +109,12 @@ def main():
         for q in qq:
             ask(q)
         if args.summary:
-            conv.print_summary()
+            conv.print_messages()
+        conv.log_summary()
+        exit(0)
     except Exception as x:
         print(f"{BRED}Error: {x}{BW}")
         sys.excepthook(type(x), x, x.__traceback__)
-        conv.print_summary()
+        # conv.print_summary()
+        conv.log_summary()
+        exit(1)

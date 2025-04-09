@@ -4,9 +4,12 @@ import contextlib
 import os
 import re
 import sys
+from datetime import datetime
 import time
 from typing import Any, cast, Dict, List, Optional, TypedDict
+import json
 import yaml
+import paella
 
 # from rich import print_json
 # from rich.syntax import Syntax
@@ -26,4 +29,5 @@ HERE = os.path.dirname(__file__)
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 SESSIONS = os.path.abspath(os.path.join(ROOT, "sessions"))
 PROLOGS = os.path.abspath(os.path.join(ROOT, "prologs"))
+LOGS = os.path.abspath(os.path.join(ROOT, "logs"))
 SPACES = os.path.abspath(os.path.join(ROOT, "../lelem-spaces/spaces"))

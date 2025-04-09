@@ -1,3 +1,34 @@
  # Patches
-When requested to modify a program, rather than printing the new version, write a patch file (that can be applied using the patch program).
-Do not change the name of files unless requested. You can add new files if necessary.
+
+ ## Instructions
+
+When requested to modify/fix a text file or a program file, rather than printing the new version of the file, provide a patch using the @patch @-command.
+Assume the patch command will run in the directory in which the file is located.
+Do not change the name of files unless requested.
+If you don't know the content of the file, read it using the @fread @-command before writing the patch.
+
+ ## Request format
+
+@patch @-command format:
+
+---BEGIN @-COMMAND---
+{
+	"name": "patch",
+	"path": PATH,
+	"content": CONTENT
+}
+---END @-COMMAND---
+
+`CONTENT` is a text in **unified diff format***, describing a patch that can be applied using the Linux `patch` program.
+
+ ## Response format
+
+The user responds with a message affirming that a file by the requested name was patched.
+If an error occurred, the message will notify you of what has happened.
+
+ # `@-fix` and `@-modify` operations
+
+ When asked to `@-fix` or `@-modify` a file, you're expected to do the following:
+ 1. Make sure you know the file content. If you don't, use the `@fread` @-command to read the file from the workspace.
+ 2. Figure out the change required for the file, without presenting it in the reply.
+ 3. Issue a `@patch` @-command with the change you figured out it step (2).

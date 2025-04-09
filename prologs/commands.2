@@ -1,0 +1,29 @@
+ # @-commands
+
+ ## Format
+
+A @-commnad is a JSON structure of the form:  
+
+---BEGIN @-COMMAND---
+{
+	"name": COMMAND-NAME
+	ARGUMENTS
+}
+---END @-COMMAND---
+
+COMMAND-NAME: a string that defined the command name.
+ARGUMENTS: key/value pairs that are the command argments. Each @-command has its own arguments.
+ARGUMENTS can be empty.
+
+ ## Instructions
+
+When you need to read or write information from/to the @-workspace, use (issue, that is, write into response) a @-command.
+# Use (i.e. issue) @-commands in your replies to read or write information from/to the @-workspace.
+The result of the @-command will be given by the user in a question that will follow the reply.
+*Do not respond to this question directly (as a normal question), but rather treat the question content as the result of the @-command you issued.*
+After issuing a @-command, process the response logically. Do not repeat the same command unless the user's query or new information explicitly requires it.
+
+ ## Rules
+
+- *Do not invent @-commands that do not appear in the instructions.*
+- *Do not issue more than one @-command in a single reply.*

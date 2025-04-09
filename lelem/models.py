@@ -46,3 +46,18 @@ class Models:
 
         table = [{"model": key, **value} for key, value in self._yaml.items()]
         print(tabulate(table, headers="keys", tablefmt="grid"))
+
+def find_model(model_name):
+    models = Models()
+    model = models.match(model_name)
+    if model == []:
+        print(f"Error: no model matches {model_name}")
+        exit(1)
+    elif isinstance(model, list):
+        matched_models = model
+        for m in matched_models:
+            if m.name == model_name:
+                return m
+        print(f"Error: more than one model match: {[model.name for model in model]}")
+        exit(1)
+    return model

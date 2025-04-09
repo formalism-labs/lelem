@@ -15,38 +15,51 @@ class Actor():
             if not os.path.isdir(space):
                 raise Exception(f"space not found: {space0}")
         self.space = space
+        self.conv.space = space
 
     def ask(self, q: Question) -> str:
         answer = self.conv.ask(q)
         if q.noc:
             return answer
+        cmd = ""
+        in_cmd = False
         for line in answer.splitlines():
-            words = line.split()
-            if len(words) == 0:
-                continue
-            try:
-                w = words[0]
-                if w[0] == '@':
-                    cmd = w[1:]
-                    return self.exec(cmd, words[1:], reply=answer)
-            except Exception as x:
-                raise Exception(f"error executing command: {cmd} {words[1:]}") from x
+            if line == '---BEGIN @-COMMAND---':
+                in_cmd = True
+            elif line == '---END @-COMMAND---':
+                if in_cmd:
+                    in_cmd = False
+                    try:
+                        cmd_dict = json.loads(cmd)
+                    except Exception as x:
+                        raise Exception(f"invalid command: {cmd}") from x
+                    try:
+                        return self.exec(cmd_dict, reply=answer)
+                    except Exception as x:
+                        raise Exception(f"error executing command: {cmd}") from x
+            elif in_cmd:
+                cmd += line + "\n"
         return answer
 
-    def exec(self, cmd: str, args: List[str], reply: Optional[str] = None):
+    def exec(self, cmd: dict, reply: Optional[str] = None):
+        cmd_name = cmd["name"]
         with contextlib.chdir(self.space):
-            if cmd == 'fread':
-                answer = command_fread(args[0])
+            if cmd_name == 'fread':
+                answer = command_fread(cmd['path'])
                 q = Question(answer, response=True)
                 return self.conv.ask(q)
-            elif cmd == 'fwrite':
-                return command_fwrite(args[0], reply=reply)
-                q = Question(answer, response=True)
-                return self.conv.ask(q)
-            elif cmd == 'ls':
-                answer = command_ls(args, space=self.space, reply=reply)
+            elif cmd_name == 'fwrite':
+                return command_fwrite(cmd['path'], cmd['content'], reply=reply)
+            elif cmd_name == 'ls':
+                try:
+                    path = cmd['path']
+                except:
+                    path = '/'
+                answer = command_ls(path, space=self.space, reply=reply)
                 q = Question(answer, response=True)
                 return self.ask(q)
+            elif cmd_name == 'patch':
+                return command_patch(cmd['path'], cmd['content'], reply=reply)
             else:
                 return f"there is no command named @{cmd}. please revise."
         q = Question(answer, response=True)
@@ -59,51 +72,43 @@ def command_fread(filepath: str, reply: Optional[str] = None):
     text = ""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            text = f.read()
+            text = json.dumps({'content': f.read()})
         return f"""
-@response
+---BEGIN @-COMMAND RESPONSE---
 {text}
-@endresponse
+---END @-COMMAND RESPONSE---
 """
     except:
         return f"file {filepath} does not exist"
 
-def command_fwrite(filepath, reply: Optional[str] = None):
-    text = ""
-    collecting = False
-    for line in re.split(r'(\n)', reply): # reply.splitlines():
-        if line.startswith("@fwrite"):
-            collecting = True
-        elif collecting:
-            if line == "@end":
-                collecting = False
-                break
-            else:
-                text += line
-    if collecting:
-        print("Warning: in @fwrite: @end is missing from reply")
-
+def command_fwrite(filepath: str, content: str, reply: Optional[str] = None):
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(text)
-    
+        f.write(content)
     return f"Written file {filepath}"
 
-def command_ls(paths, space: str, reply: Optional[str] = None):
-    path = paths[0] if len(paths) > 0 else ""
+def command_patch(filepath: str, content: str, reply: Optional[str] = None):
+    fpatch = paella.tempfilepath("", ".patch")
+    with open(fpatch, 'w', encoding='utf-8') as f:
+        f.write(content)
+    try:
+        paella.sh(f"patch -p1 -i {fpatch}")
+        return f"Patched file {filepath}"
+    except:
+        return f"Problem patching file {filepath}"
+
+def command_ls(path, space: str, reply: Optional[str] = None):
     if path == "":
         path = "/"
     try:
-        text= paella.sh(f"ls {space}/{path}")
+        output = paella.sh(f"ls {space}/{path}")
+        text = json.dumps({'content': output})
         return f"""
-@response
+---BEGIN @-COMMAND RESPONSE---
 {text}
-@endresponse
+---END @-COMMAND RESPONSE---
 """
     except:
         return f"path {path} does not exist"
-
-def command_patch(filepath, reply: Optional[str] = None):
-    pass
 
 def command_git_add(filepath, reply: Optional[str] = None):
     pass

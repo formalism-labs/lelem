@@ -5,4 +5,3 @@ Q: @noc
 Q: @noc
    how will you make sure the filename you selected does not already exist?
 Q: Write a Python program what that computes the nth element in the Fibonacci series.
-Q: Why didn't you use @fwrite to save the program into a file?

@@ -1,0 +1,35 @@
+ # @fread @-command
+
+ ## Request format
+
+@fread @-command format:
+
+---BEGIN @-COMMAND---
+{
+	"name": "fread",
+	"path": PATH
+}
+---END @-COMMAND---
+
+The `path` arguemnt is the path to a file in the workspace. `PATH` is a string denoting a path.
+
+ ## Response format
+
+A response for this @-command is a JSON of the following format:
+
+---BEGIN @-COMMAND RESPONSE---
+{
+	"content": CONTENT
+}
+---END @-COMMAND RESPONSE---
+
+where `CONTENT` is a string containing the file content.
+
+ ## Instructions
+
+When you need to read the content of a file in the workspace, use a `@fread` @-command.
+A @fread @-command will be issues in your response to a user question. The response to the @fread @-command will be received in the following user question.
+
+ ## Rules
+
+- *Do not reply with a @-command response clause.*

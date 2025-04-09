@@ -65,5 +65,5 @@ def main():
     except:
         enc = tiktoken.get_encoding(args.model)
 
-    ntok = len(enc.encode(prolog))
-    print(f"={len(prolog)} [{ntok}]")
+    ntok = len(enc.encode(text))
+    print(f"={len(text)} [{ntok}]")
