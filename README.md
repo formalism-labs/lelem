@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="docs/lelem.png" alt="Logo" />
+</p>
+<h1 align="center">/this is lelem/</h1>
+
 # lelem (ლელემ)
 
 A Python library that allows for LLM conversations in which the LLM takes an active part by issuing commands and accepting replies from the user. In a way, it resembles MCP behavior without the MCP overhead.
